@@ -30,8 +30,8 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
         ref={containerRef}
       >
         <div
-          className="tradingview-widget-container__widget"
-          style={{ height, width: "100%" }}
+          className={cn("tradingview-widget-container", className)}
+          ref={containerRef}
         />
       </div>
     </div>

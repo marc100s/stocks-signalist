@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Signalist",
   description:
-    "Track real-time stock prices, get personilized stock alerts and explore stock insights.",
+    "Track real-time stock prices, get personalized alerts and explore detailed company insights.",
 };
 
 export default function RootLayout({

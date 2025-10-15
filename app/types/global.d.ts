@@ -216,6 +216,12 @@ declare global {
     changePercent?: number;
   };
 
+  type UserForNewsEmail = {
+    email: string;
+    name: string;
+    country?: string;
+  };
+
   type ForgotPasswordFormData = {
     email: string;
   };

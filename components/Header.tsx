@@ -1,8 +1,8 @@
-// biome-ignore assist/source/organizeImports: biome handles this lint: negative
 import Link from "next/link";
 import Image from "next/image";
-import NavItems from "./NavItems";
-import UserDropdown from "./UserDropdown";
+import NavItems from "@/components/NavItems";
+import UserDropdown from "@/components/UserDropdown";
+// import {searchStocks} from "@/lib/actions/finnhub.actions";
 
 const Header = async ({ user }: { user: User }) => {
   return (
@@ -20,10 +20,10 @@ const Header = async ({ user }: { user: User }) => {
         <nav className="hidden sm:block">
           <NavItems />
         </nav>
+
         <UserDropdown user={user} />
       </div>
     </header>
   );
 };
-
 export default Header;

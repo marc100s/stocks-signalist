@@ -1,4 +1,4 @@
-// biome-ignore assist/source/organizeImports: <explanation>
+// biome-ignore assist/source/organizeImports: <Example of suppression: // biome-ignore lint: false positive>
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { connectToDatabase } from "@/database/mongoose";
@@ -19,30 +19,17 @@ export const getAuth = async () => {
   }
 
   authInstance = betterAuth({
-    database: mongodbAdapter(db),
+    // biome-ignore lint/suspicious/noExplicitAny: <Example of suppression: // biome-ignore lint: false positive>
+    database: mongodbAdapter(db as any),
     secret: process.env.BETTER_AUTH_SECRET,
-    baseUrl: process.env.BETTER_AUTH_URL,
+    baseURL: process.env.BETTER_AUTH_URL,
     emailAndPassword: {
       enabled: true,
       disableSignUp: false,
-      requireEmailVerification: true,
-      resetPassword: {
-        tokenExpiryMinutes: 30,
-        fromEmail: "",
-        replyToEmail: "",
-        transport: {
-          host: process.env.SMTP_HOST,
-          port: Number(process.env.SMTP_PORT) || 587,
-          secure: process.env.SMTP_SECURE === "true",
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          },
-        },
-        minPasswordLength: 8,
-        maxPasswordLength: 128,
-        autoSignIn: true,
-      },
+      requireEmailVerification: false,
+      minPasswordLength: 8,
+      maxPasswordLength: 128,
+      autoSignIn: true,
     },
     plugins: [nextCookies()],
   });
@@ -50,4 +37,4 @@ export const getAuth = async () => {
   return authInstance;
 };
 
-export const auth = getAuth();
+export const auth = await getAuth();

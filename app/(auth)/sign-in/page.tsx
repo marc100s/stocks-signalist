@@ -4,8 +4,12 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import InputField from "@/components/forms/inputField";
 import FooterLink from "@/components/forms/FooterLink";
+import { toast } from "sonner";
+import { signInWithEmail } from "@/lib/actions/auth.actions";
+import { useRouter } from "next/navigation";
 
 const SignInPage = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -19,8 +23,21 @@ const SignInPage = () => {
   });
 
   const onSubmit = async (data: SignInFormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(data);
+    try {
+      const result = await signInWithEmail(data);
+      if (result.success) {
+        router.push("/");
+        toast.success("Signed in successfully!");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Sign in failed. Please try again.", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to create an account",
+      });
+    }
   };
 
   return (

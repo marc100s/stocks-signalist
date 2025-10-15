@@ -62,10 +62,9 @@ export const signInWithEmail = async ({ email, password }: SignInFormData) => {
 
     if (response) {
       await inngest.send({
-        name: "app/user.created",
+        name: "app/user.signed-in",
         data: {
           email,
-          password,
         },
       });
     }

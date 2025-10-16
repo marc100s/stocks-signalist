@@ -30,7 +30,7 @@ const ForgotPasswordPage = () => {
       <div className="text-center space-y-6">
         <h1 className="form-title">Request Sent</h1>
         <p>
-          If an account with that email exists, we've sent a link to reset your
+          If an account with that email exists, we&apos;ve sent a link to reset your
           password.
         </p>
         <FooterLink text="Back to" linkText="Sign In" href="/sign-in" />
@@ -43,7 +43,7 @@ const ForgotPasswordPage = () => {
     <>
       <h1 className="form-title">Reset Your Password</h1>
       <p className="text-center text-muted-foreground -mt-4 mb-6">
-        Enter your email and we'll send you a reset link.
+        Enter your email and we&apos;ll send you a reset link.
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <InputField

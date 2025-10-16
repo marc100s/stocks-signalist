@@ -40,7 +40,7 @@ export const connectToDatabase = async (): Promise<mongoose.Mongoose> => {
   }
 
   console.log(
-    `Connected to ${process.env.NODE_ENV || "unknown env"} - ${MONGODB_URI}`
+    `Connected to MongoDB in ${process.env.NODE_ENV || "unknown"} environment`
   );
   return cached.conn;
 };

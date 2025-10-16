@@ -2,7 +2,6 @@
 
 // biome-ignore assist/source/organizeImports: <Example of suppression: // biome-ignore lint: false positive>
 import { useForm } from "react-hook-form";
-import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
 import InputField from "@/components/forms/inputField";
@@ -18,7 +17,7 @@ import { signUpWithEmail } from "@/lib/actions/auth.actions";
 import { useRouter } from "next/navigation"; // ✅ fixed import
 import { toast } from "sonner"; // ✅ add this (or your toast lib)
 
-const SignUp = ({ children }: { children: ReactNode }) => {
+const SignUp = () => {
   const router = useRouter();
 
   const {

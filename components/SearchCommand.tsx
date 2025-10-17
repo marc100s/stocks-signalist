@@ -8,7 +8,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
-import { Loader2, TrendingUp } from "lucide-react";
+import { Loader2, Star, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { searchStocks } from "@/lib/actions/finnhub.actions";
 import { useDebounce } from "@/app/hooks/useDebounce";
@@ -133,6 +133,18 @@ export default function SearchCommand({
                         {stock.symbol} | {stock.exchange} | {stock.type}
                       </div>
                     </div>
+                    <Star
+                      className={`h-4 w-4 ${
+                        stock.isInWatchlist
+                          ? "fill-yellow-500 text-yellow-500"
+                          : "text-gray-400"
+                      }`}
+                      aria-label={
+                        stock.isInWatchlist
+                          ? "In watchlist"
+                          : "Not in watchlist"
+                      }
+                    />
                   </Link>
                 </li>
               ))}

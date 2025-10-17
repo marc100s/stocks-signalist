@@ -133,7 +133,18 @@ export default function SearchCommand({
                         {stock.symbol} | {stock.exchange} | {stock.type}
                       </div>
                     </div>
-                    <Star />
+                    <Star
+                      className={`h-4 w-4 ${
+                        stock.isInWatchlist
+                          ? "fill-yellow-500 text-yellow-500"
+                          : "text-gray-400"
+                      }`}
+                      aria-label={
+                        stock.isInWatchlist
+                          ? "In watchlist"
+                          : "Not in watchlist"
+                      }
+                    />
                   </Link>
                 </li>
               ))}

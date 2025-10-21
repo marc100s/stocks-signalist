@@ -65,8 +65,8 @@ export async function getNews(
             )}&from=${range.from}&to=${range.to}&token=${FINNHUB_API_KEY}`;
             const articles = await fetchJSON<RawNewsArticle[]>(url, 300);
             perSymbolArticles[sym] = (articles || []).filter(validateArticle);
-          } catch (e) {
-            console.error("Error fetching company news for", sym, e);
+          } catch {
+            // Silently handle individual news fetch errors
             perSymbolArticles[sym] = [];
           }
         })
@@ -146,8 +146,8 @@ export const searchStocks = cache(
               )}&token=${FINNHUB_API_KEY}`;
               const profile = await fetchJSON<any>(url, 3600);
               return { sym, profile };
-            } catch (e) {
-              console.error("Error fetching profile2 for", sym, e);
+            } catch {
+              // Silently handle API errors to prevent blocking other stocks
               return { sym, profile: null };
             }
           })
@@ -193,9 +193,114 @@ export const searchStocks = cache(
           };
         })
         .slice(0, maxResults);
-    } catch (err) {
-      console.error("Error in stock search:", err);
+    } catch {
+      // Silently handle search errors
       return [];
     }
   }
 );
+
+// -----------------------------
+//  Get Stock Quote
+// -----------------------------
+export async function getStockQuote(symbol: string) {
+  try {
+    if (!FINNHUB_API_KEY) {
+      throw new Error("FINNHUB API key is missing");
+    }
+
+    const url = `${FINNHUB_BASE_URL}/quote?symbol=${encodeURIComponent(
+      symbol.toUpperCase()
+    )}&token=${FINNHUB_API_KEY}`;
+    const quote = await fetchJSON<{
+      c?: number; // current price
+      d?: number; // change
+      dp?: number; // percent change
+      h?: number; // high
+      l?: number; // low
+      o?: number; // open
+      pc?: number; // previous close
+    }>(url, 300);
+
+    return {
+      price: quote.c || 0,
+      change: quote.d || 0,
+      changePercent: quote.dp || 0,
+    };
+  } catch {
+    // Silently handle quote fetch errors
+    return {
+      price: 0,
+      change: 0,
+      changePercent: 0,
+    };
+  }
+}
+
+// -----------------------------
+//  Get Company Profile
+// -----------------------------
+export async function getCompanyProfile(symbol: string) {
+  try {
+    if (!FINNHUB_API_KEY) {
+      throw new Error("FINNHUB API key is missing");
+    }
+
+    const url = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${encodeURIComponent(
+      symbol.toUpperCase()
+    )}&token=${FINNHUB_API_KEY}`;
+    const profile = await fetchJSON<{
+      name?: string;
+      marketCapitalization?: number;
+    }>(url, 3600);
+
+    return {
+      name: profile.name || symbol,
+      marketCap: (profile.marketCapitalization || 0) * 1000000, // Convert from millions
+    };
+  } catch {
+    // Silently handle profile fetch errors
+    return {
+      name: symbol,
+      marketCap: 0,
+    };
+  }
+}
+
+// -----------------------------
+//  Get Basic Financials (includes P/E ratio)
+// -----------------------------
+export async function getBasicFinancials(symbol: string) {
+  try {
+    if (!FINNHUB_API_KEY) {
+      throw new Error("FINNHUB API key is missing");
+    }
+
+    const url = `${FINNHUB_BASE_URL}/stock/metric?symbol=${encodeURIComponent(
+      symbol.toUpperCase()
+    )}&metric=all&token=${FINNHUB_API_KEY}`;
+    const data = await fetchJSON<{
+      metric?: {
+        peBasicExclExtraTTM?: number;
+        peNormalizedAnnual?: number;
+        peTTM?: number;
+      };
+    }>(url, 3600);
+
+    // Try different P/E ratio fields (Finnhub provides multiple)
+    const peRatio =
+      data.metric?.peBasicExclExtraTTM ||
+      data.metric?.peNormalizedAnnual ||
+      data.metric?.peTTM ||
+      null;
+
+    return {
+      peRatio: peRatio && peRatio > 0 ? Number(peRatio.toFixed(2)) : null,
+    };
+  } catch {
+    // Silently handle financials fetch errors
+    return {
+      peRatio: null,
+    };
+  }
+}

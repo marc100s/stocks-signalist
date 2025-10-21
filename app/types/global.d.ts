@@ -109,6 +109,18 @@ declare global {
     showTrashIcon?: boolean;
     type?: "button" | "icon";
     onWatchlistChange?: (symbol: string, isAdded: boolean) => void;
+    userEmail?: string;
+  };
+
+  type WatchlistStockData = {
+    symbol: string;
+    company: string;
+    addedAt: Date;
+    price: number;
+    change: number;
+    changePercent: number;
+    marketCap: number;
+    peRatio: number | null;
   };
 
   type QuoteData = {

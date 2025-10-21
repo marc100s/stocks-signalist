@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+// biome-ignore assist/source/organizeImports: <biome-ignore lint: false positive>
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,13 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Star, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { searchStocks } from "@/lib/actions/finnhub.actions";
-import { useDebounce } from "@/app/hooks/useDebounce";
+import {
+  addToWatchlist,
+  removeFromWatchlist,
+} from "@/lib/actions/watchlist.actions";
 
 export default function SearchCommand({
   renderAs = "button",
   label = "Add stock",
   initialStocks,
-}: SearchCommandProps) {
+  userEmail,
+}: SearchCommandProps & { userEmail?: string }) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +30,17 @@ export default function SearchCommand({
     useState<StockWithWatchlistStatus[]>(initialStocks);
 
   const isSearchMode = !!searchTerm.trim();
-  const displayStocks = isSearchMode ? stocks : stocks?.slice(0, 10);
+  // Remove duplicates based on symbol and exchange to avoid key conflicts
+  const uniqueStocks =
+    stocks?.filter(
+      (stock, index, arr) =>
+        arr.findIndex(
+          (s) => s.symbol === stock.symbol && s.exchange === stock.exchange
+        ) === index
+    ) || [];
+  const displayStocks = isSearchMode
+    ? uniqueStocks
+    : uniqueStocks?.slice(0, 10);
 
   // Open dialog with Cmd/Ctrl + K
   useEffect(() => {
@@ -39,35 +54,87 @@ export default function SearchCommand({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  const handleSearch = async () => {
-    if (!searchTerm.trim()) {
-      setStocks(initialStocks);
-      return;
-    }
+  // Use a ref to store the timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    setLoading(true);
-    try {
-      const results = await searchStocks(searchTerm.trim());
-      setStocks(results);
-    } catch {
-      setStocks([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const performSearch = useCallback(
+    async (term: string) => {
+      if (!term.trim()) {
+        setStocks(initialStocks);
+        return;
+      }
 
-  // ✅ Debounce the search handler
-  const debouncedSearch = useDebounce(handleSearch, 300);
+      setLoading(true);
+      try {
+        const results = await searchStocks(term.trim());
+        setStocks(results);
+      } catch {
+        setStocks([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [initialStocks]
+  );
 
-  // Run debounce whenever searchTerm changes
+  // Debounce search term changes
   useEffect(() => {
-    debouncedSearch();
-  }, [searchTerm]);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      performSearch(searchTerm);
+    }, 300);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [searchTerm, performSearch]);
 
   const handleSelectStock = () => {
     setOpen(false);
     setSearchTerm("");
     setStocks(initialStocks);
+  };
+
+  const handleWatchlistToggle = async (stock: StockWithWatchlistStatus) => {
+    if (!userEmail) {
+      console.log("No user logged in");
+      return;
+    }
+
+    try {
+      if (stock.isInWatchlist) {
+        const result = await removeFromWatchlist(userEmail, stock.symbol);
+        if (result.success) {
+          // Update local state
+          setStocks((prev) =>
+            prev.map((s) =>
+              s.symbol === stock.symbol ? { ...s, isInWatchlist: false } : s
+            )
+          );
+        }
+      } else {
+        const result = await addToWatchlist(
+          userEmail,
+          stock.symbol,
+          stock.name
+        );
+        if (result.success) {
+          // Update local state
+          setStocks((prev) =>
+            prev.map((s) =>
+              s.symbol === stock.symbol ? { ...s, isInWatchlist: true } : s
+            )
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling watchlist:", error);
+    }
   };
 
   return (
@@ -114,41 +181,56 @@ export default function SearchCommand({
               {isSearchMode ? "No results found" : "No stocks available"}
             </div>
           ) : (
-            <ul>
+            <div>
               <div className="search-count text-sm text-gray-500 mb-2">
                 {isSearchMode ? "Search results" : "Popular stocks"} (
                 {displayStocks?.length || 0})
               </div>
-              {displayStocks.map((stock) => (
-                <li key={stock.symbol} className="search-item">
-                  <Link
-                    href={`/stocks/${stock.symbol}`}
-                    onClick={handleSelectStock}
-                    className="search-item-link flex items-center gap-3"
+              <ul>
+                {displayStocks.map((stock, index) => (
+                  <li
+                    key={`${stock.symbol}-${stock.exchange}-${index}`}
+                    className="search-item"
                   >
-                    <TrendingUp className="h-4 w-4 text-gray-500" />
-                    <div className="flex-1">
-                      <div className="font-medium">{stock.name}</div>
-                      <div className="text-sm text-gray-500">
-                        {stock.symbol} | {stock.exchange} | {stock.type}
-                      </div>
+                    <div className="search-item-link flex items-center gap-3">
+                      <TrendingUp className="h-4 w-4 text-gray-500" />
+                      <Link
+                        href={`/stocks/${stock.symbol}`}
+                        onClick={handleSelectStock}
+                        className="flex-1"
+                      >
+                        <div className="font-medium">{stock.name}</div>
+                        <div className="text-sm text-gray-500">
+                          {stock.symbol} | {stock.exchange} | {stock.type}
+                        </div>
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleWatchlistToggle(stock);
+                        }}
+                        className="p-1 hover:bg-gray-700 rounded"
+                        aria-label={
+                          stock.isInWatchlist
+                            ? "Remove from watchlist"
+                            : "Add to watchlist"
+                        }
+                      >
+                        <Star
+                          className={`h-4 w-4 ${
+                            stock.isInWatchlist
+                              ? "fill-yellow-500 text-yellow-500"
+                              : "text-gray-400"
+                          }`}
+                        />
+                      </button>
                     </div>
-                    <Star
-                      className={`h-4 w-4 ${
-                        stock.isInWatchlist
-                          ? "fill-yellow-500 text-yellow-500"
-                          : "text-gray-400"
-                      }`}
-                      aria-label={
-                        stock.isInWatchlist
-                          ? "In watchlist"
-                          : "Not in watchlist"
-                      }
-                    />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </CommandList>
       </CommandDialog>

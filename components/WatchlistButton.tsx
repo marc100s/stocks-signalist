@@ -1,9 +1,9 @@
 "use client";
-import { useMemo, useState } from "react";
-
-// Minimal WatchlistButton implementation to satisfy page requirements.
-// This component focuses on UI contract only. It toggles local state and
-// calls onWatchlistChange if provided. Styling hooks match globals.css.
+import { useMemo, useState, useTransition } from "react";
+import {
+  addToWatchlist,
+  removeFromWatchlist,
+} from "@/lib/actions/watchlist.actions";
 
 const WatchlistButton = ({
   symbol,
@@ -12,8 +12,10 @@ const WatchlistButton = ({
   showTrashIcon = false,
   type = "button",
   onWatchlistChange,
-}: WatchlistButtonProps) => {
+  userEmail,
+}: WatchlistButtonProps & { userEmail?: string }) => {
   const [added, setAdded] = useState<boolean>(!!isInWatchlist);
+  const [isPending, startTransition] = useTransition();
 
   const label = useMemo(() => {
     if (type === "icon") return added ? "" : "";
@@ -21,14 +23,43 @@ const WatchlistButton = ({
   }, [added, type]);
 
   const handleClick = () => {
-    const next = !added;
-    setAdded(next);
-    onWatchlistChange?.(symbol, next);
+    if (!userEmail) {
+      // Fallback to local state if no user email provided
+      const next = !added;
+      setAdded(next);
+      onWatchlistChange?.(symbol, next);
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        if (added) {
+          const result = await removeFromWatchlist(userEmail, symbol);
+          if (result.success) {
+            setAdded(false);
+            onWatchlistChange?.(symbol, false);
+          } else {
+            console.error("Failed to remove from watchlist:", result.message);
+          }
+        } else {
+          const result = await addToWatchlist(userEmail, symbol, company);
+          if (result.success) {
+            setAdded(true);
+            onWatchlistChange?.(symbol, true);
+          } else {
+            console.error("Failed to add to watchlist:", result.message);
+          }
+        }
+      } catch (error) {
+        console.error("Error toggling watchlist:", error);
+      }
+    });
   };
 
   if (type === "icon") {
     return (
       <button
+        type="button"
         title={
           added
             ? `Remove ${symbol} from watchlist`
@@ -41,6 +72,7 @@ const WatchlistButton = ({
         }
         className={`watchlist-icon-btn ${added ? "watchlist-icon-added" : ""}`}
         onClick={handleClick}
+        disabled={isPending}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -50,6 +82,7 @@ const WatchlistButton = ({
           strokeWidth="1.5"
           className="watchlist-star"
         >
+          <title>Star icon</title>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -62,8 +95,10 @@ const WatchlistButton = ({
 
   return (
     <button
+      type="button"
       className={`watchlist-btn ${added ? "watchlist-remove" : ""}`}
       onClick={handleClick}
+      disabled={isPending}
     >
       {showTrashIcon && added ? (
         <svg
@@ -74,6 +109,7 @@ const WatchlistButton = ({
           stroke="currentColor"
           className="w-5 h-5 mr-2"
         >
+          <title>Trash icon</title>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

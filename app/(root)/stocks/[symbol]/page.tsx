@@ -1,5 +1,8 @@
 import TradingViewWidget from "@/components/TradingViewWidget";
 import WatchlistButton from "@/components/WatchlistButton";
+import { auth } from "@/lib/better-auth/auth";
+import { headers } from "next/headers";
+import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
 import {
   SYMBOL_INFO_WIDGET_CONFIG,
   CANDLE_CHART_WIDGET_CONFIG,
@@ -12,6 +15,20 @@ import {
 export default async function StockDetails({ params }: StockDetailsPageProps) {
   const { symbol } = await params;
   const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`;
+
+  // Get session and watchlist status
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  let isInWatchlist = false;
+  let userEmail = "";
+
+  if (session?.user?.email) {
+    userEmail = session.user.email;
+    const watchlistSymbols = await getWatchlistSymbolsByEmail(userEmail);
+    isInWatchlist = watchlistSymbols.includes(symbol.toUpperCase());
+  }
 
   return (
     <div className="flex min-h-screen p-4 md:p-6 lg:p-8">
@@ -45,7 +62,8 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
             <WatchlistButton
               symbol={symbol.toUpperCase()}
               company={symbol.toUpperCase()}
-              isInWatchlist={false}
+              isInWatchlist={isInWatchlist}
+              userEmail={userEmail}
             />
           </div>
 

@@ -1,12 +1,14 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import InputField from "@/components/forms/inputField";
 import FooterLink from "@/components/forms/FooterLink";
 import { toast } from "sonner";
 import { signInWithEmail } from "@/lib/actions/auth.actions";
 import { useRouter } from "next/navigation";
+import { signInSchema, type SignInFormData } from "@/lib/schemas";
 
 const SignInPage = () => {
   const router = useRouter();
@@ -15,6 +17,7 @@ const SignInPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -51,13 +54,6 @@ const SignInPage = () => {
           type="email"
           register={register}
           error={errors.email}
-          validation={{
-            required: "Email is required",
-            pattern: {
-              value: /^\S+@\S+\.\S+$/,
-              message: "Please enter a valid email address",
-            },
-          }}
         />
 
         <div className="space-y-2">
@@ -68,20 +64,12 @@ const SignInPage = () => {
             type="password"
             register={register}
             error={errors.password}
-            validation={{
-              required: "Password is required",
-              minLength: {
-                value: 8,
-                message: "Password must be at least 8 characters",
-              },
-            }}
           />
           <div className="flex justify-end">
             <FooterLink
               text="Forgot password?"
               linkText="Reset"
               href="/reset-password"
-              className="text-sm"
             />
           </div>
         </div>

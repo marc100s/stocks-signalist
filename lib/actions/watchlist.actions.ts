@@ -8,6 +8,7 @@ import {
   getCompanyProfile,
   getBasicFinancials,
 } from "./finnhub.actions";
+import { addToWatchlistSchema, removeFromWatchlistSchema } from "@/lib/schemas";
 
 export async function getWatchlistSymbolsByEmail(
   email: string
@@ -117,11 +118,12 @@ export async function getWatchlistWithQuotes(
 }
 
 export async function addToWatchlist(
-  email: string,
-  symbol: string,
-  company: string
+  data: unknown
 ): Promise<{ success: boolean; message: string }> {
   try {
+    // Validate input with Zod
+    const { email, symbol, company } = addToWatchlistSchema.parse(data);
+
     const mongoose = await connectToDatabase();
     const db = mongoose.connection.db;
     if (!db) throw new Error("MongoDB connection not found");
@@ -155,6 +157,16 @@ export async function addToWatchlist(
   } catch (err: unknown) {
     console.error("addToWatchlist error:", err);
 
+    // Handle Zod validation errors
+    if (
+      err &&
+      typeof err === "object" &&
+      "name" in err &&
+      err.name === "ZodError"
+    ) {
+      return { success: false, message: "Invalid input data" };
+    }
+
     if (err && typeof err === "object" && "code" in err && err.code === 11000) {
       return { success: false, message: "Stock already in watchlist" };
     }
@@ -164,10 +176,12 @@ export async function addToWatchlist(
 }
 
 export async function removeFromWatchlist(
-  email: string,
-  symbol: string
+  data: unknown
 ): Promise<{ success: boolean; message: string }> {
   try {
+    // Validate input with Zod
+    const { email, symbol } = removeFromWatchlistSchema.parse(data);
+
     const mongoose = await connectToDatabase();
     const db = mongoose.connection.db;
     if (!db) throw new Error("MongoDB connection not found");
@@ -203,6 +217,17 @@ export async function removeFromWatchlist(
     return { success: true, message: "Removed from watchlist" };
   } catch (err) {
     console.error("removeFromWatchlist error:", err);
+
+    // Handle Zod validation errors
+    if (
+      err &&
+      typeof err === "object" &&
+      "name" in err &&
+      err.name === "ZodError"
+    ) {
+      return { success: false, message: "Invalid input data" };
+    }
+
     return { success: false, message: "Failed to remove from watchlist" };
   }
 }

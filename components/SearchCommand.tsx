@@ -108,7 +108,10 @@ export default function SearchCommand({
 
     try {
       if (stock.isInWatchlist) {
-        const result = await removeFromWatchlist(userEmail, stock.symbol);
+        const result = await removeFromWatchlist({
+          email: userEmail,
+          symbol: stock.symbol,
+        });
         if (result.success) {
           // Update local state
           setStocks((prev) =>
@@ -118,11 +121,11 @@ export default function SearchCommand({
           );
         }
       } else {
-        const result = await addToWatchlist(
-          userEmail,
-          stock.symbol,
-          stock.name
-        );
+        const result = await addToWatchlist({
+          email: userEmail,
+          symbol: stock.symbol,
+          company: stock.name,
+        });
         if (result.success) {
           // Update local state
           setStocks((prev) =>
@@ -140,6 +143,8 @@ export default function SearchCommand({
   return (
     <>
       {renderAs === "text" ? (
+        // biome-ignore lint/a11y/noStaticElementInteractions: <biome-ignore lint: false positive>
+        // biome-ignore lint/a11y/useKeyWithClickEvents: <biome-ignore lint: false positive>
         <span
           onClick={() => setOpen(true)}
           className="search-text cursor-pointer"

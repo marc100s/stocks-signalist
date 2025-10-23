@@ -31,7 +31,7 @@ export default function WatchlistTable({
 
     setLoading(symbol);
     try {
-      const result = await removeFromWatchlist(userEmail, symbol);
+      const result = await removeFromWatchlist({ email: userEmail, symbol });
 
       if (result.success) {
         setStocks((prev) => prev.filter((stock) => stock.symbol !== symbol));

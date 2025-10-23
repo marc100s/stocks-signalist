@@ -34,7 +34,10 @@ const WatchlistButton = ({
     startTransition(async () => {
       try {
         if (added) {
-          const result = await removeFromWatchlist(userEmail, symbol);
+          const result = await removeFromWatchlist({
+            email: userEmail,
+            symbol,
+          });
           if (result.success) {
             setAdded(false);
             onWatchlistChange?.(symbol, false);
@@ -42,7 +45,11 @@ const WatchlistButton = ({
             console.error("Failed to remove from watchlist:", result.message);
           }
         } else {
-          const result = await addToWatchlist(userEmail, symbol, company);
+          const result = await addToWatchlist({
+            email: userEmail,
+            symbol,
+            company,
+          });
           if (result.success) {
             setAdded(true);
             onWatchlistChange?.(symbol, true);

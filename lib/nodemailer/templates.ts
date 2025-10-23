@@ -142,7 +142,7 @@ export const WELCOME_EMAIL_TEMPLATE = `<!DOCTYPE html>
                                 <tr>
                                     <td align="center">
                                         <a href="https://stock-market-dev.vercel.app/" style="display: block; width: 100%; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%); color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center; box-sizing: border-box;">
-                                            Go to Dashboard
+                                            Log In & Go to Dashboard
                                         </a>
                                     </td>
                                 </tr>
@@ -1094,6 +1094,257 @@ export const INACTIVE_USER_REMINDER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                                 <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
                                     <a href="{{unsubscribeUrl}}" style="color: #CCDADC !important; text-decoration: underline;">Unsubscribe</a> | 
                                     <a href="{{dashboardUrl}}" style="color: #CCDADC !important; text-decoration: underline;">Visit Signalist</a>
+                                </p>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
+                                    © 2025 Signalist
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;
+
+export const EMAIL_VERIFICATION_TEMPLATE = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Verify Your Email - Signalist</title>
+    <style type="text/css">
+        @media (prefers-color-scheme: dark) {
+            .email-container {
+                background-color: #141414 !important;
+                border: 1px solid #30333A !important;
+            }
+            .dark-bg {
+                background-color: #050505 !important;
+            }
+            .dark-text {
+                color: #ffffff !important;
+            }
+            .dark-text-secondary {
+                color: #9ca3af !important;
+            }
+            .dark-text-muted {
+                color: #6b7280 !important;
+            }
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            .mobile-padding {
+                padding: 24px !important;
+            }
+            .mobile-header-padding {
+                padding: 24px 24px 12px 24px !important;
+            }
+            .mobile-text {
+                font-size: 14px !important;
+                line-height: 1.5 !important;
+            }
+            .mobile-title {
+                font-size: 24px !important;
+                line-height: 1.3 !important;
+            }
+            .mobile-button {
+                width: 100% !important;
+                text-align: center !important;
+            }
+            .mobile-outer-padding {
+                padding: 20px 10px !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #050505; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #050505;">
+        <tr>
+            <td align="center" class="mobile-outer-padding" style="padding: 40px 20px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" class="email-container" style="max-width: 600px; background-color: #141414; border-radius: 8px; border: 1px solid #30333A;">
+                    
+                    <!-- Header with Logo -->
+                    <tr>
+                        <td align="left" class="mobile-header-padding" style="padding: 40px 40px 20px 40px;">
+                            <img src="https://ik.imagekit.io/a6fkjou7d/logo.png?updatedAt=1756378431634" alt="Signalist Logo" width="150" style="max-width: 100%; height: auto;">
+                        </td>
+                    </tr>
+                    
+                    <!-- Main Content -->
+                    <tr>
+                        <td class="mobile-padding" style="padding: 40px 40px 40px 40px;">
+                            
+                            <!-- Heading -->
+                            <h1 class="mobile-title dark-text" style="margin: 0 0 30px 0; font-size: 28px; font-weight: 600; color: #FDD458; line-height: 1.2;">
+                                Verify Your Email Address
+                            </h1>
+                            
+                            <!-- Message -->
+                            <p class="mobile-text dark-text-secondary" style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: #CCDADC;">
+                                Hi {{name}},
+                            </p>
+                            
+                            <p class="mobile-text dark-text-secondary" style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: #CCDADC;">
+                                Thank you for signing up with Signalist! Please verify your email address by clicking the button below:
+                            </p>
+                            
+                            <!-- CTA Button -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 30px 0; width: 100%;">
+                                <tr>
+                                    <td align="center" class="mobile-button">
+                                        <a href="{{verificationUrl}}" style="display: inline-block; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%); color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;">
+                                            Verify Email Address
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Alternative Link -->
+                            <p class="mobile-text dark-text-muted" style="margin: 0 0 30px 0; font-size: 14px; line-height: 1.6; color: #6b7280;">
+                                Or copy and paste this link into your browser:
+                            </p>
+                            
+                            <p style="margin: 0 0 30px 0; font-size: 14px; line-height: 1.4; color: #FDD458; word-break: break-all;">
+                                {{verificationUrl}}
+                            </p>
+                            
+                            <!-- Expiry Notice -->
+                            <div style="background-color: #1f2937; border-radius: 8px; padding: 20px; margin-bottom: 30px; border: 1px solid #374151;">
+                                <p class="mobile-text" style="margin: 0; font-size: 14px; line-height: 1.5; color: #9ca3af;">
+                                    ⏰ This verification link will expire in 24 hours.
+                                </p>
+                            </div>
+                            
+                            <!-- Security Note -->
+                            <p class="mobile-text dark-text-muted" style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #6b7280;">
+                                If you didn't create an account with Signalist, please ignore this email.
+                            </p>
+                            
+                            <!-- Footer Text -->
+                            <div style="text-align: center; margin: 40px 0 0 0; padding-top: 30px; border-top: 1px solid #30333A;">
+                                <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
+                                    Signalist HQ, 200 Market Street, San Francisco, CA 94105
+                                </p>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
+                                    © 2025 Signalist
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;
+
+export const PASSWORD_RESET_TEMPLATE = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Reset Your Password - Signalist</title>
+    <style type="text/css">
+        @media (prefers-color-scheme: dark) {
+            .email-container {
+                background-color: #141414 !important;
+                border: 1px solid #30333A !important;
+            }
+            .dark-text {
+                color: #ffffff !important;
+            }
+            .dark-text-secondary {
+                color: #9ca3af !important;
+            }
+            .dark-text-muted {
+                color: #6b7280 !important;
+            }
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            .mobile-padding {
+                padding: 24px !important;
+            }
+            .mobile-title {
+                font-size: 24px !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #050505; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #050505;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" class="email-container" style="max-width: 600px; background-color: #141414; border-radius: 8px; border: 1px solid #30333A;">
+                    
+                    <tr>
+                        <td style="padding: 40px 40px 20px 40px;">
+                            <img src="https://ik.imagekit.io/a6fkjou7d/logo.png?updatedAt=1756378431634" alt="Signalist Logo" width="150" style="max-width: 100%; height: auto;">
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="mobile-padding" style="padding: 40px;">
+                            
+                            <h1 class="mobile-title dark-text" style="margin: 0 0 30px 0; font-size: 28px; font-weight: 600; color: #FDD458; line-height: 1.2;">
+                                Reset Your Password
+                            </h1>
+                            
+                            <p class="dark-text-secondary" style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: #CCDADC;">
+                                Hi {{name}},
+                            </p>
+                            
+                            <p class="dark-text-secondary" style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: #CCDADC;">
+                                We received a request to reset your password for your Signalist account. Click the button below to reset it:
+                            </p>
+                            
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 30px 0; width: 100%;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{{resetUrl}}" style="display: inline-block; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%); color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;">
+                                            Reset Password
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p class="dark-text-muted" style="margin: 0 0 30px 0; font-size: 14px; line-height: 1.6; color: #6b7280;">
+                                Or copy and paste this link into your browser:
+                            </p>
+                            
+                            <p style="margin: 0 0 30px 0; font-size: 14px; line-height: 1.4; color: #FDD458; word-break: break-all;">
+                                {{resetUrl}}
+                            </p>
+                            
+                            <div style="background-color: #1f2937; border-radius: 8px; padding: 20px; margin-bottom: 30px; border: 1px solid #374151;">
+                                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #9ca3af;">
+                                    ⏰ This password reset link will expire in 1 hour.
+                                </p>
+                            </div>
+                            
+                            <p class="dark-text-muted" style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #6b7280;">
+                                If you didn't request a password reset, you can safely ignore this email. Your password will not be changed.
+                            </p>
+                            
+                            <div style="text-align: center; margin: 40px 0 0 0; padding-top: 30px; border-top: 1px solid #30333A;">
+                                <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
+                                    Signalist HQ, 200 Market Street, San Francisco, CA 94105
                                 </p>
                                 <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
                                     © 2025 Signalist

@@ -98,10 +98,26 @@ Make sure you have the latest version of Node.js and a package manager installed
 
 This project requires certain environment variables to be set for full functionality. Fill in the values in your `.env.local` file.
 
-* `DATABASE_URL`: Your database connection string (e.g., from a PostgreSQL provider).
+* `DATABASE_URL`: Your database connection string (e.g., from MongoDB).
 * `FINNHUB_API_KEY`: Your API key from [Finnhub](https://finnhub.io/) for stock data.
-* `NEXTAUTH_URL`: The base URL of your application. For local development, this is `http://localhost:3000`.
-* `NEXTAUTH_SECRET`: A secret key for NextAuth.js. You can generate one using `openssl rand -base64 32`.
+* `BETTER_AUTH_URL`: The base URL of your application. For local development, this is `http://localhost:3000`.
+* `BETTER_AUTH_SECRET`: A secret key for Better Auth. You can generate one using `openssl rand -base64 32`.
+* `NODEMAILER_EMAIL`: Your Gmail address for sending emails.
+* `NODEMAILER_PASSWORD`: Your Gmail app password (not your regular password).
+
+**Email Verification in Development:**
+
+In development mode (`NODE_ENV=development`), email verification is **disabled** for easier testing:
+- Users are automatically signed in after registration
+- Verification URLs are logged to the console instead of being sent via email
+- No need to configure email credentials for local development
+
+In production, email verification is **required**:
+- Users must verify their email before signing in
+- Verification emails are sent via nodemailer (Gmail SMTP)
+- Verification links expire after 24 hours
+
+To test email verification in development, check your terminal console for the verification URL after signing up.
 
 ---
 

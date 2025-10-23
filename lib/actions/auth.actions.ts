@@ -3,17 +3,27 @@
 import { auth } from "@/lib/better-auth/auth";
 import { inngest } from "@/lib/inngest/client";
 import { headers } from "next/headers";
+import {
+  signUpSchema,
+  signInSchema,
+  forgotPasswordSchema,
+} from "@/lib/schemas";
 
-export const signUpWithEmail = async ({
-  email,
-  password,
-  fullName,
-  country,
-  investmentGoals,
-  riskTolerance,
-  preferredIndustry,
-}: SignUpFormData) => {
+export const signUpWithEmail = async (data: unknown) => {
   try {
+    // Validate incoming data with Zod
+    const validatedData = signUpSchema.parse(data);
+
+    const {
+      email,
+      password,
+      fullName,
+      country,
+      investmentGoals,
+      riskTolerance,
+      preferredIndustry,
+    } = validatedData;
+
     const authInstance = await auth;
 
     const response = await authInstance.api.signUpEmail({
@@ -37,7 +47,10 @@ export const signUpWithEmail = async ({
     return { success: true, data: response };
   } catch (e) {
     console.error("Error signing up:", e);
-    return { success: false, message: "Sign up failed" };
+    return {
+      success: false,
+      message: e instanceof Error ? e.message : "Sign up failed",
+    };
   }
 };
 
@@ -52,8 +65,12 @@ export const signOut = async () => {
   }
 };
 
-export const signInWithEmail = async ({ email, password }: SignInFormData) => {
+export const signInWithEmail = async (data: unknown) => {
   try {
+    // Validate incoming data with Zod
+    const validatedData = signInSchema.parse(data);
+    const { email, password } = validatedData;
+
     const authInstance = await auth;
 
     const response = await authInstance.api.signInEmail({
@@ -75,7 +92,89 @@ export const signInWithEmail = async ({ email, password }: SignInFormData) => {
     return {
       success: false,
       message:
-        "Sign in failed. Try again. If it persists, reset password for security",
+        e instanceof Error
+          ? e.message
+          : "Sign in failed. Try again. If it persists, reset password for security",
+    };
+  }
+};
+
+export const forgotPassword = async (data: unknown) => {
+  try {
+    const validatedData = forgotPasswordSchema.parse(data);
+    const { email } = validatedData;
+
+    const authInstance = await auth;
+
+    await authInstance.api.forgetPassword({
+      body: { email, redirectTo: "/reset-password/confirm" },
+    });
+
+    return { success: true };
+  } catch (e) {
+    console.error("Error requesting password reset:", e);
+    // Always return success for security (don't reveal if email exists)
+    return { success: true };
+  }
+};
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  try {
+    const authInstance = await auth;
+
+    await authInstance.api.resetPassword({
+      body: { token, newPassword },
+    });
+
+    return { success: true };
+  } catch (e) {
+    console.error("Error resetting password:", e);
+    return {
+      success: false,
+      message:
+        e instanceof Error
+          ? e.message
+          : "Failed to reset password. The link may have expired.",
+    };
+  }
+};
+
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string
+) => {
+  try {
+    const authInstance = await auth;
+
+    await authInstance.api.changePassword({
+      body: { currentPassword, newPassword },
+      headers: await headers(),
+    });
+
+    return { success: true };
+  } catch (e) {
+    console.error("Error changing password:", e);
+    return {
+      success: false,
+      message: e instanceof Error ? e.message : "Failed to change password",
+    };
+  }
+};
+
+export const updateEmail = async (_newEmail: string) => {
+  try {
+    // Better Auth doesn't support direct email change, so we need to implement custom logic
+    // For now, return not implemented
+    return {
+      success: false,
+      message:
+        "Email change is not currently supported. Please contact support.",
+    };
+  } catch (e) {
+    console.error("Error updating email:", e);
+    return {
+      success: false,
+      message: e instanceof Error ? e.message : "Failed to update email",
     };
   }
 };

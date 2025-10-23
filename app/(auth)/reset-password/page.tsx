@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import InputField from "@/components/forms/inputField";
 import FooterLink from "@/components/forms/FooterLink";
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordFormData,
+} from "@/lib/schemas";
+import { forgotPassword } from "@/lib/actions/auth.actions";
+import { toast } from "sonner";
 
 const ForgotPasswordPage = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -13,15 +20,22 @@ const ForgotPasswordPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: "" },
     mode: "onBlur",
   });
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
-    // Replace with your actual API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Password reset requested for:", data.email);
-    setIsSubmitted(true);
+    try {
+      await forgotPassword(data);
+      setIsSubmitted(true);
+      toast.success("Reset link sent!", {
+        description: "Check your email for password reset instructions.",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      setIsSubmitted(true); // Still show success for security
+    }
   };
 
   // After the form is submitted, show a confirmation message
@@ -30,8 +44,8 @@ const ForgotPasswordPage = () => {
       <div className="text-center space-y-6">
         <h1 className="form-title">Request Sent</h1>
         <p>
-          If an account with that email exists, we&apos;ve sent a link to reset your
-          password.
+          If an account with that email exists, we&apos;ve sent a link to reset
+          your password.
         </p>
         <FooterLink text="Back to" linkText="Sign In" href="/sign-in" />
       </div>
@@ -53,13 +67,6 @@ const ForgotPasswordPage = () => {
           type="email"
           register={register}
           error={errors.email}
-          validation={{
-            required: "Email is required",
-            pattern: {
-              value: /^\S+@\S+\.\S+$/,
-              message: "Please enter a valid email address",
-            },
-          }}
         />
         <Button
           type="submit"

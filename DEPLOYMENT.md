@@ -338,6 +338,8 @@ export const { GET, POST } = toNextJsHandler(auth);
 
 ### 8. Users Created in 'test' Database Instead of Named Database
 
+**For complete troubleshooting guide, see [MongoDB Configuration Guide](./docs/MONGODB_CONFIGURATION.md)**
+
 **Symptom:** 
 - Users are being created in MongoDB's default 'test' database
 - Your application can't find users even though they exist in MongoDB Atlas

@@ -355,6 +355,12 @@ For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 This happens when the MongoDB URI doesn't include a database name. MongoDB then defaults to using the 'test' database.
 
+**Quick Solution:**
+1. Add database name to `MONGODB_URI`: `mongodb+srv://user:pass@cluster/YOUR_DB_NAME?options`
+2. Run `npm run db:check-config` to verify
+
+**For detailed explanation and step-by-step fix, see [MongoDB Configuration Guide](./docs/MONGODB_CONFIGURATION.md)**
+
 **Solution:**
 1. Check your `MONGODB_URI` includes a database name:
    ```bash

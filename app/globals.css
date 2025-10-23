@@ -204,15 +204,15 @@
   }
 
   .form-input {
-    @apply h-12 px-3 py-3 text-white text-base placeholder:text-gray-500 border-gray-600 bg-gray-800 rounded-lg focus:!border-yellow-500 focus:ring-0;
+    @apply h-12 px-3 py-3 text-white text-base placeholder:text-gray-500 border-gray-600 bg-gray-800 rounded-lg focus: !border-yellow-500 focus:ring-0;
   }
 
   .select-trigger {
-    @apply w-full !h-12 px-3 py-3 text-base border-gray-600 bg-gray-800 text-white rounded-lg focus:!border-yellow-500 focus:ring-0;
+    @apply w-full !h-12 px-3 py-3 text-base border-gray-600 bg-gray-800 text-white rounded-lg focus: !border-yellow-500 focus:ring-0;
   }
 
   .country-select-trigger {
-    @apply h-12 px-3 py-3 text-base w-full justify-between font-normal border-gray-600 bg-gray-800 text-gray-400 rounded-lg focus:!border-yellow-500 focus:ring-0;
+    @apply h-12 px-3 py-3 text-base w-full justify-between font-normal border-gray-600 bg-gray-800 text-gray-400 rounded-lg focus: !border-yellow-500 focus:ring-0;
   }
 
   .country-select-input {
@@ -224,7 +224,7 @@
   }
 
   .country-select-item {
-    @apply text-white cursor-pointer px-3 py-2 rounded-sm bg-gray-800 hover:!bg-gray-600;
+    @apply text-white cursor-pointer px-3 py-2 rounded-sm bg-gray-800 hover: !bg-gray-600;
   }
 
   .footer-link {
@@ -296,7 +296,7 @@
   }
 
   .watchlist-remove {
-    @apply !bg-red-500 hover:!bg-red-500 !text-gray-900;
+    @apply !bg-red-500 hover: !bg-red-500 !text-gray-900;
   }
 
   .watchlist-empty-container {
@@ -332,11 +332,11 @@
   }
 
   .watchlist-icon-btn {
-    @apply w-fit cursor-pointer hover:!bg-transparent text-gray-400 hover:text-yellow-500;
+    @apply w-fit cursor-pointer hover: !bg-transparent text-gray-400 hover:text-yellow-500;
   }
 
   .watchlist-icon-added {
-    @apply !text-yellow-500 hover:!text-yellow-600;
+    @apply !text-yellow-500 hover: !text-yellow-600;
   }
 
   .watchlist-icon {
@@ -564,4 +564,47 @@
 
 .scrollbar-hide-default::-webkit-scrollbar-thumb:hover {
   background-color: #9095A1;
+}
+
+/* Toast Notification Styles */
+[data-sonner-toast] {
+  @apply !bg-gray-800 !border-gray-600 !text-gray-100;
+  min-width: 350px !important;
+  padding: 16px !important;
+  font-size: 15px !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  @apply !bg-gray-800 !border-teal-400/40;
+}
+
+[data-sonner-toast][data-type="error"] {
+  @apply !bg-gray-800 !border-red-500/40;
+}
+
+[data-sonner-toast][data-type="warning"] {
+  @apply !bg-gray-800 !border-orange-500/40;
+}
+
+[data-sonner-toast] [data-title] {
+  @apply !text-gray-100 font-semibold;
+  font-size: 15px !important;
+}
+
+[data-sonner-toast] [data-description] {
+  @apply !text-gray-400;
+  font-size: 14px !important;
+  margin-top: 4px !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  @apply !text-teal-400;
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  @apply !text-red-500;
+}
+
+[data-sonner-toast][data-type="warning"] [data-icon] {
+  @apply !text-orange-500;
 }

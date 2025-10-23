@@ -13,6 +13,17 @@ let authInstance: ReturnType<typeof betterAuth> | null = null;
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+// Determine the base URL based on environment
+const getBaseURL = () => {
+  // In production, use the production URL
+  if (!isDevelopment && process.env.BETTER_AUTH_URL) {
+    return process.env.BETTER_AUTH_URL;
+  }
+
+  // In development, use localhost or NEXT_PUBLIC_BASE_URL
+  return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+};
+
 export const getAuth = async () => {
   if (authInstance) {
     return authInstance;
@@ -25,10 +36,13 @@ export const getAuth = async () => {
     throw new Error("Database connection failed");
   }
 
+  const baseURL = getBaseURL();
+  console.log(`🔐 Better Auth initialized with baseURL: ${baseURL}`);
+
   authInstance = betterAuth({
     database: mongodbAdapter(db as Db),
     secret: process.env.BETTER_AUTH_SECRET,
-    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    baseURL,
     emailAndPassword: {
       enabled: true,
       disableSignUp: false,

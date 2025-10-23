@@ -100,10 +100,19 @@ This project requires certain environment variables to be set for full functiona
 
 * `DATABASE_URL`: Your database connection string (e.g., from MongoDB).
 * `FINNHUB_API_KEY`: Your API key from [Finnhub](https://finnhub.io/) for stock data.
-* `BETTER_AUTH_URL`: The base URL of your application. For local development, this is `http://localhost:3000`.
+* `BETTER_AUTH_URL`: The base URL of your application. 
+  - **Development**: Set to `http://localhost:3000` or leave empty (will use `NEXT_PUBLIC_BASE_URL`)
+  - **Production**: Set to your actual domain (e.g., `https://yourdomain.com`)
 * `BETTER_AUTH_SECRET`: A secret key for Better Auth. You can generate one using `openssl rand -base64 32`.
 * `NODEMAILER_EMAIL`: Your Gmail address for sending emails.
 * `NODEMAILER_PASSWORD`: Your Gmail app password (not your regular password).
+
+**Important: Production Configuration**
+
+When deploying to production, make sure to:
+1. Set `NODE_ENV=production`
+2. Update `BETTER_AUTH_URL` to your production domain (e.g., `https://stocks-signalist.com`)
+3. This ensures that email verification and password reset links use the correct domain
 
 **Email Verification in Development:**
 

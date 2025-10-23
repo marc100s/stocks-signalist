@@ -31,14 +31,20 @@ const SignInPage = () => {
       if (result.success) {
         router.push("/");
         toast.success("Signed in successfully!");
+      } else {
+        // Show error toast when sign in fails
+        toast.error("Sign in failed", {
+          description:
+            result.message || "Invalid email or password. Please try again.",
+        });
       }
     } catch (error) {
       console.error(error);
-      toast.error("Sign in failed. Please try again.", {
+      toast.error("Sign in failed", {
         description:
           error instanceof Error
             ? error.message
-            : "Failed to create an account",
+            : "An unexpected error occurred. Please try again.",
       });
     }
   };

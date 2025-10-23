@@ -13,9 +13,14 @@ When deploying to production (Vercel, Netlify, etc.), ensure these environment v
 
 ### Database
 
-- [ ] `MONGODB_URI` - Consider using a separate production database
+- [ ] `MONGODB_URI` - **CRITICAL: Must include database name in connection string**
+  - Correct format: `mongodb+srv://user:pass@cluster.mongodb.net/SignalisticsDB?retryWrites=true&w=majority`
+  - ❌ Wrong: `mongodb+srv://user:pass@cluster.mongodb.net/?retryWrites=true&w=majority` (defaults to 'test' database)
+  - ✅ Right: `mongodb+srv://user:pass@cluster.mongodb.net/SignalisticsDB?retryWrites=true&w=majority`
+- [ ] Use separate production database (recommended: `SignalisticsDB`)
 - [ ] Ensure database has proper indexes for performance
 - [ ] Backup strategy in place
+- [ ] **Note:** Better Auth uses singular collection names: `user`, `account`, `session`, `verification` (not plural)
 
 ### Email Configuration
 
@@ -30,6 +35,27 @@ When deploying to production (Vercel, Netlify, etc.), ensure these environment v
 - [ ] `INNGEST_EVENT_KEY` - Production event key
 
 ## Common Issues & Solutions
+
+### Database Migration from 'test' to 'SignalisticsDB'
+
+**If you previously had users in the 'test' database:**
+
+1. **Migration completed:** Watchlists have been migrated to `SignalisticsDB`
+2. **User accounts:** Existing users will need to re-register (old accounts in 'test' database won't work)
+3. **Watchlists preserved:** All 7 watchlists successfully copied to new database
+4. **Collections structure:** Better Auth will create: `user`, `account`, `session`, `verification` (singular names)
+
+**To verify migration:**
+```bash
+# Check SignalisticsDB has watchlists
+MONGODB_URI="your-connection-string/SignalisticsDB?options" npx tsx scripts/list-collections.ts
+```
+
+**Clean up old test database (optional):**
+```bash
+# After confirming SignalisticsDB works in production
+# You can drop the 'test' database from MongoDB Atlas UI
+```
 
 ### Email Reset Links Point to Localhost
 
@@ -52,12 +78,20 @@ When deploying to production (Vercel, Netlify, etc.), ensure these environment v
 
 ### Database Connection Issues
 
-**Problem:** Can't connect to MongoDB in production
+**Problem:** Can't connect to MongoDB in production or users ending up in wrong database
 
 **Solutions:**
-1. Verify `MONGODB_URI` is correct for production
-2. Check MongoDB Atlas allows connections from your hosting provider's IPs
-3. Consider using a separate production database cluster
+1. **CRITICAL:** Verify `MONGODB_URI` includes the database name: `/SignalisticsDB?` in the URL
+2. Check MongoDB Atlas allows connections from your hosting provider's IPs (add `0.0.0.0/0` for Vercel)
+3. Use separate production database cluster for better isolation
+4. Better Auth creates collections automatically: `user`, `account`, `session`, `verification` (all singular)
+5. If you migrated from 'test' database, ensure all watchlists data was copied
+
+**How to verify correct database:**
+```bash
+# Run list-collections script to check which database is being used
+npx tsx scripts/list-collections.ts
+```
 
 ## Testing Before Launch
 

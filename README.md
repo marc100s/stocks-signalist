@@ -141,6 +141,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Your Name - [@your\_twitter\_handle](https://twitter.com/your_twitter_handle) - email@example.com
+Ellipsis Technologies - 
 
-Project Link: [https://github.com/your-username/stocks-signalist](https://github.com/your-username/stocks-signalist)
+[@EllipsisTechno1](https://x.com/EllipsisTechno1) - privacyellipsis@ellipsis-email.awsapps.com 
+
+Project Link: [https://github.com/marc100s/stocks-signalist](https://github.com/marc100s/stocks-signalist)

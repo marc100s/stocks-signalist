@@ -7,7 +7,8 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "test:db": "node scripts/test-db.mjs"
+    "test:db": "node scripts/test-db.mjs",
+    "db:clear-users": "tsx scripts/clear-users.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

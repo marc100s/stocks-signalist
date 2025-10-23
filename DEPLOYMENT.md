@@ -47,17 +47,27 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/DATABASE_NAME?re
 
 **Important Database Notes:**
 
-1. **Always specify a database name** in the URI (e.g., `/SignalisticsDB`)
-2. Without a database name, MongoDB defaults to the `test` database
-3. Better Auth uses **singular** collection names:
+1. **Always specify a database name** in the URI (e.g., `/signalist_prod`)
+2. **Without a database name, MongoDB defaults to the `test` database** - this is a common mistake!
+3. The database name goes AFTER the cluster address and BEFORE the ? query parameters
+4. Better Auth uses **singular** collection names:
    - `user` (not `users`)
    - `account` (not `accounts`)
    - `session` (not `sessions`)
    - `verification` (not `verifications`)
 
 **Recommended Setup:**
-- Development: `mongodb://.../**dev_database**`
-- Production: `mongodb://.../**prod_database**`
+- Development: `mongodb+srv://user:pass@cluster.mongodb.net/signalist_dev?options`
+- Production: `mongodb+srv://user:pass@cluster.mongodb.net/signalist_prod?options`
+
+**Verify Your Configuration:**
+```bash
+# Check database configuration and connection
+npm run db:check-config
+
+# List collections in your database
+npm run db:list-collections
+```
 
 ### Email Configuration
 
@@ -238,14 +248,30 @@ CssSyntaxError: tailwindcss: /vercel/path0/app/globals.css
 
 **Common Causes & Solutions:**
 
-**a) Missing Database Name:**
+**a) Missing Database Name (MOST COMMON ISSUE):**
 ```bash
 # ❌ Wrong - defaults to 'test' database
-MONGODB_URI=mongodb+srv://...@cluster.mongodb.net/?options
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/?options
+
+# ❌ Also wrong - no database name
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net?options
 
 # ✅ Correct - specifies database name
-MONGODB_URI=mongodb+srv://...@cluster.mongodb.net/SignalisticsDB?options
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/signalist_prod?options
 ```
+
+**How to identify this issue:**
+- Check MongoDB Atlas → Browse Collections
+- If you see a database named "test" with your data, this is the problem
+- Your users and collections are in the wrong database
+
+**How to fix:**
+1. Add database name to your `MONGODB_URI` (between cluster address and ?)
+2. Run `npm run db:check-config` to verify configuration
+3. Old data will remain in the `test` database
+4. Options:
+   - Start fresh (recommended): Users re-register in the correct database
+   - Migrate data: Use MongoDB Atlas data migration tools
 
 **b) IP Whitelist:**
 - MongoDB Atlas → Network Access
@@ -255,7 +281,7 @@ MONGODB_URI=mongodb+srv://...@cluster.mongodb.net/SignalisticsDB?options
 **c) Wrong Credentials:**
 - Verify username and password are correct
 - Check for special characters that need URL encoding
-- Test connection string in MongoDB Compass
+- Test connection string in MongoDB Compass or with `npm run db:check-config`
 
 ### 5. Email Verification Not Working
 
@@ -309,6 +335,76 @@ export const { GET, POST } = toNextJsHandler(auth);
 - `verification` (not `verifications`)
 
 **Also check database name in connection string!**
+
+### 8. Users Created in 'test' Database Instead of Named Database
+
+**Symptom:** 
+- Users are being created in MongoDB's default 'test' database
+- Your application can't find users even though they exist in MongoDB Atlas
+
+**Root Cause:** 
+MongoDB URI missing database name, causing MongoDB to use the default 'test' database
+
+**How to Identify:**
+```bash
+# Run the database configuration checker
+npm run db:check-config
+```
+
+This will show:
+- Which database you're connected to
+- Whether database name is in the URI
+- What collections exist and where
+
+**Solution:**
+
+1. **Update your MongoDB URI** to include the database name:
+   ```bash
+   # Add your database name between cluster address and query parameters
+   MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/YOUR_DB_NAME?options
+   ```
+
+2. **Verify the configuration:**
+   ```bash
+   npm run db:check-config
+   ```
+
+3. **Choose how to handle existing data:**
+
+   **Option A - Start Fresh (Recommended):**
+   - Delete users from the 'test' database in MongoDB Atlas
+   - Or ignore them - they won't be accessed once URI is fixed
+   - Have users re-register (they'll be created in the correct database)
+
+   **Option B - Migrate Data:**
+   - Use MongoDB Atlas data migration tools
+   - Export from 'test' database, import to your named database
+   - More complex but preserves existing user data
+
+4. **Update environment variables in Vercel:**
+   - Go to Vercel → Settings → Environment Variables
+   - Update `MONGODB_URI` with the correct database name
+   - Redeploy the application
+
+**Prevention:**
+- Always include database name in `MONGODB_URI`
+- Use the `.env.example` file as a reference
+- Run `npm run db:check-config` before deploying
+- Use separate databases for dev and prod (e.g., `signalist_dev`, `signalist_prod`)
+
+**Understanding the Issue:**
+MongoDB's connection string format is:
+```
+mongodb+srv://username:password@cluster.mongodb.net/DATABASE_NAME?options
+                                                               ^^^^^^^^^^^^
+                                                               This part is crucial!
+```
+
+Without the database name:
+- MongoDB connects successfully (no error)
+- But uses the default 'test' database
+- Your data ends up in the wrong place
+- Application can't find users/data
 
 ---
 

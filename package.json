@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test:db": "node scripts/test-db.mjs",
+    "db:check-config": "tsx scripts/check-db-config.ts",
+    "db:list-collections": "tsx scripts/list-collections.ts",
     "db:clear-users": "tsx scripts/clear-users.ts"
   },
   "dependencies": {

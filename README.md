@@ -151,12 +151,30 @@ Follow these steps to get a local copy up and running.
    
    Then fill in your credentials in the `.env` file. See [Environment Variables](#environment-variables) section for details.
 
-4. **Run the development server:**
+   **⚠️ IMPORTANT: MongoDB Configuration**
+   
+   Make sure your `MONGODB_URI` includes a database name:
+   ```bash
+   # ❌ Wrong - will use 'test' database
+   MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/?options
+   
+   # ✅ Correct - includes database name
+   MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/signalist_dev?options
+   ```
+
+4. **Verify database configuration:**
+   ```bash
+   npm run db:check-config
+   ```
+   
+   This will check for common configuration issues and verify your connection.
+
+5. **Run the development server:**
    ```bash
    npm run dev
    ```
 
-5. **Open your browser:**
+6. **Open your browser:**
    
    Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
 
@@ -175,7 +193,10 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 PORT=3000
 
 # Database
-MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority"
+# ⚠️ CRITICAL: Always include a database name in your MongoDB URI!
+# Format: mongodb+srv://username:password@cluster/DATABASE_NAME?options
+# Without a database name, MongoDB will default to 'test' database
+MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/signalist_dev?retryWrites=true&w=majority"
 
 # Authentication
 BETTER_AUTH_SECRET="generate_with_openssl_rand_base64_32"
@@ -266,9 +287,23 @@ npm run start        # Start production server
 npm run lint         # Run ESLint
 
 # Database
-npm run test:db      # Test database connection
-npm run db:clear-users  # Clear all users from database (development)
+npm run test:db              # Test database connection
+npm run db:check-config      # Verify database configuration and check for issues
+npm run db:list-collections  # List all collections in your database
+npm run db:clear-users       # Clear all users from database (development only)
 ```
+
+**Important Database Scripts:**
+
+- **`db:check-config`**: Run this BEFORE deploying to verify your MongoDB configuration is correct. It will warn you if:
+  - Database name is missing from the URI
+  - You're using the default 'test' database
+  - Collections have incorrect names
+  - There are any connection issues
+
+- **`db:list-collections`**: Quickly see what collections exist in your database and how many documents are in each
+
+- **`db:clear-users`**: Development helper to clear all users, sessions, accounts, and verification tokens
 
 ---
 
@@ -309,6 +344,72 @@ npm run db:clear-users  # Clear all users from database (development)
    - Test password reset flow
 
 For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+---
+
+## Troubleshooting
+
+### Database Issues
+
+**Problem: Users created in 'test' database instead of my named database**
+
+This happens when the MongoDB URI doesn't include a database name. MongoDB then defaults to using the 'test' database.
+
+**Solution:**
+1. Check your `MONGODB_URI` includes a database name:
+   ```bash
+   # Format: mongodb+srv://user:pass@cluster/DATABASE_NAME?options
+   MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/signalist_dev?options
+   ```
+
+2. Verify with the configuration checker:
+   ```bash
+   npm run db:check-config
+   ```
+
+3. The checker will tell you:
+   - If database name is missing
+   - Which database you're actually connected to
+   - What collections exist
+
+**Problem: Can't find users even though they exist in MongoDB Atlas**
+
+Check if your users are in the 'test' database:
+1. Go to MongoDB Atlas → Browse Collections
+2. Look for a database named "test"
+3. If you see your users there, update your `MONGODB_URI` to include a database name
+4. Users will need to re-register in the correct database (or you can migrate data)
+
+**Problem: Wrong collection names (plural vs singular)**
+
+Better Auth uses **singular** collection names:
+- ✅ `user`, `account`, `session`, `verification`
+- ❌ NOT `users`, `accounts`, `sessions`, `verifications`
+
+If you see plural collection names, they were likely created by a different system and won't be used by Better Auth.
+
+### Authentication Issues
+
+**Problem: Email verification not working in development**
+
+Development mode skips email verification by default:
+- Users are auto-signed in after registration
+- Verification URLs are logged to console
+- Set `NODE_ENV=production` to test actual email sending
+
+**Problem: Password reset link shows 404**
+
+Ensure the Better Auth API route exists at `/app/api/auth/[...all]/route.ts`
+
+### API Issues
+
+**Problem: Finnhub API rate limit exceeded**
+
+Free tier has rate limits:
+- 60 API calls/minute
+- Consider upgrading or implementing caching
+
+For more troubleshooting help, see [DEPLOYMENT.md](./DEPLOYMENT.md) or check [GitHub Issues](https://github.com/marc100s/stocks-signalist/issues).
 
 ---
 

@@ -15,19 +15,21 @@ async function clearUsers() {
       throw new Error("Database connection not established");
     }
 
-    // Delete all documents from the users collection
-    const result = await db.collection("users").deleteMany({});
-    console.log(`✓ Deleted ${result.deletedCount} users from the database`);
+    console.log(`📊 Database name: ${db.databaseName}`);
+    console.log("⚠️  This will delete ALL users from this database!\n");
 
-    // Optionally, also clear sessions and accounts collections used by Better Auth
-    const sessionsResult = await db.collection("sessions").deleteMany({});
+    // Better Auth uses singular collection names
+    const userResult = await db.collection("user").deleteMany({});
+    console.log(`✓ Deleted ${userResult.deletedCount} users from the database`);
+
+    const sessionsResult = await db.collection("session").deleteMany({});
     console.log(`✓ Deleted ${sessionsResult.deletedCount} sessions`);
 
-    const accountsResult = await db.collection("accounts").deleteMany({});
+    const accountsResult = await db.collection("account").deleteMany({});
     console.log(`✓ Deleted ${accountsResult.deletedCount} accounts`);
 
     const verificationsResult = await db
-      .collection("verifications")
+      .collection("verification")
       .deleteMany({});
     console.log(
       `✓ Deleted ${verificationsResult.deletedCount} verification tokens`

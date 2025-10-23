@@ -88,7 +88,17 @@ export const signInWithEmail = async (data: unknown) => {
 
     return { success: true, data: response };
   } catch (e) {
-    console.error("Error signing in", e);
+    // Log detailed error for debugging
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error signing in", e);
+    } else {
+      // In production, log less verbose error
+      console.error(
+        "Sign in failed:",
+        e instanceof Error ? e.message : "Unknown error"
+      );
+    }
+
     return {
       success: false,
       message:

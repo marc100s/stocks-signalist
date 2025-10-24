@@ -80,7 +80,10 @@ export const getAuth = async () => {
             verificationUrl: url,
           });
 
-          console.log("✅ Verification email sent successfully to:", user.email);
+          console.log(
+            "✅ Verification email sent successfully to:",
+            user.email
+          );
         } catch (error) {
           console.error("❌ Error sending verification email:", error);
           throw error;
@@ -115,7 +118,10 @@ export const getAuth = async () => {
             resetUrl: url,
           });
 
-          console.log("✅ Password reset email sent successfully to:", user.email);
+          console.log(
+            "✅ Password reset email sent successfully to:",
+            user.email
+          );
         } catch (error) {
           console.error("❌ Error sending password reset email:", error);
           throw error;

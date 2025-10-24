@@ -31,7 +31,6 @@ export const signUpWithEmail = async (data: unknown) => {
         email,
         password,
         name: fullName,
-        callbackURL: "/verify-email", // Redirect after email verification
       },
     });
 

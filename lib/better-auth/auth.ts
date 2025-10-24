@@ -43,26 +43,17 @@ export const getAuth = async () => {
     database: mongodbAdapter(db as Db),
     secret: process.env.BETTER_AUTH_SECRET,
     baseURL,
-    advanced: {
-      generateId: () => crypto.randomUUID(),
-    },
     emailAndPassword: {
       enabled: true,
-      disableSignUp: false,
-      requireEmailVerification: !isDevelopment, // Skip email verification in development
-      minPasswordLength: 8,
-      maxPasswordLength: 128,
-      autoSignIn: isDevelopment, // Auto sign-in in development
-      sendVerificationOnSignUp: !isDevelopment, // Only send verification in production
-      sendVerificationEmail: async ({
-        user,
-        url,
-      }: {
-        user: { email: string; name?: string };
-        url: string;
-      }) => {
+      requireEmailVerification: !isDevelopment,
+      autoSignIn: isDevelopment,
+    },
+    emailVerification: {
+      sendOnSignUp: !isDevelopment,
+      autoSignInAfterVerification: true,
+      sendVerificationEmail: async ({ user, url, token }) => {
         try {
-          // Log the URL in both dev and production to debug
+          // Log in all environments for debugging
           console.log("\n" + "=".repeat(80));
           console.log(
             `📧 EMAIL VERIFICATION (${
@@ -72,14 +63,13 @@ export const getAuth = async () => {
           console.log("=".repeat(80));
           console.log("To:", user.email);
           console.log("Name:", user.name || "User");
-          console.log("Verification URL:");
-          console.log(url);
-          console.log("URL Length:", url.length);
-          console.log("Has token param:", url.includes("token="));
+          console.log("Verification URL:", url);
+          console.log("Token:", token);
+          console.log("URL includes token:", url.includes("token="));
           console.log("=".repeat(80) + "\n");
 
           if (isDevelopment) {
-            // In development, just log - don't send email
+            // In development, just log
             return;
           }
 
@@ -89,8 +79,10 @@ export const getAuth = async () => {
             name: user.name || "User",
             verificationUrl: url,
           });
+
+          console.log("✅ Verification email sent successfully to:", user.email);
         } catch (error) {
-          console.error("Error sending verification email:", error);
+          console.error("❌ Error sending verification email:", error);
           throw error;
         }
       },
@@ -102,30 +94,42 @@ export const getAuth = async () => {
         url: string;
       }) => {
         try {
+          console.log("\n" + "=".repeat(80));
+          console.log(
+            `🔐 PASSWORD RESET (${
+              isDevelopment ? "Development" : "Production"
+            } Mode)`
+          );
+          console.log("=".repeat(80));
+          console.log("To:", user.email);
+          console.log("Reset URL:", url);
+          console.log("=".repeat(80) + "\n");
+
           if (isDevelopment) {
-            // In development, log the reset URL instead of sending email
-            console.log("\n" + "=".repeat(80));
-            console.log("🔐 PASSWORD RESET (Development Mode)");
-            console.log("=".repeat(80));
-            console.log("To:", user.email);
-            console.log("Name:", user.name || "User");
-            console.log("Reset URL:");
-            console.log(url);
-            console.log("=".repeat(80) + "\n");
             return;
           }
 
-          // In production, send actual email
           await sendPasswordResetEmail({
             email: user.email,
             name: user.name || "User",
             resetUrl: url,
           });
+
+          console.log("✅ Password reset email sent successfully to:", user.email);
         } catch (error) {
-          console.error("Error sending password reset email:", error);
+          console.error("❌ Error sending password reset email:", error);
           throw error;
         }
       },
+    },
+    account: {
+      accountLinking: {
+        enabled: false,
+      },
+    },
+    session: {
+      expiresIn: 60 * 60 * 24 * 7, // 7 days
+      updateAge: 60 * 60 * 24, // 1 day
     },
     plugins: [nextCookies()],
   });

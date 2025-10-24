@@ -6,9 +6,12 @@ When deploying to production (Vercel, Netlify, etc.), ensure these environment v
 
 ### Critical for Authentication & Emails
 
-- [ ] `NODE_ENV=production`
-- [ ] `BETTER_AUTH_URL` - Set to your production domain (e.g., `https://stocks-signalist.com`)
-- [ ] `NEXT_PUBLIC_BASE_URL` - Set to your production domain
+- [ ] `NODE_ENV=production` - Vercel sets this automatically, **do not override**
+- [ ] `BETTER_AUTH_URL` - **CRITICAL:** Set to your actual production domain
+  - ❌ Wrong: `https://your-production-domain.com` (placeholder)
+  - ✅ Right: `https://stock-market-dev.vercel.app` (or your actual domain)
+  - This is used for email verification and password reset links
+- [ ] `NEXT_PUBLIC_BASE_URL` - Set to your production domain (same as BETTER_AUTH_URL)
 - [ ] `BETTER_AUTH_SECRET` - Use a strong secret (different from development)
 
 ### Database

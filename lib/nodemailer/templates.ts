@@ -1201,8 +1201,8 @@ export const EMAIL_VERIFICATION_TEMPLATE = `<!DOCTYPE html>
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 30px 0; width: 100%;">
                                 <tr>
                                     <td align="center" class="mobile-button">
-                                        <a href="{{verificationUrl}}" style="display: inline-block; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%); color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;">
-                                            Verify Email Address
+                                        <a href="{{verificationUrl}}" style="display: inline-block; background: #FDD458 !important; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%) !important; color: #000000 !important; text-decoration: none !important; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; line-height: 1; text-align: center; mso-padding-alt: 0; text-underline-color: #000000;">
+                                            <span style="color: #000000 !important; font-weight: 600;">Verify Email Address</span>
                                         </a>
                                     </td>
                                 </tr>

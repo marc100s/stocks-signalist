@@ -180,7 +180,6 @@
 }
 
 /* === Utility Layer === */
-/* (All component-level utilities kept intact for modularity) */
 @layer utilities {
   .container {
     /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive*/
@@ -193,9 +192,143 @@
     @apply h-12 cursor-pointer bg-gradient-to-b from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-gray-950 font-medium text-base rounded-lg shadow-lg disabled:opacity-50;
   }
 
-  /* --- Layouts, forms, search, watchlist, etc. --- */
-  /* (unchanged but reformatted consistently) */
-  /* … your full utility block continues here … */
+  /* --- Layout --- */
+  .auth-container {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply flex min-h-screen items-center justify-center bg-gray-900 px-4 py-12;
+  }
+
+  .form-container {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply w-full max-w-md rounded-2xl bg-gray-800 p-8 shadow-2xl border border-gray-600;
+  }
+
+  .form-title {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply mb-6 text-2xl font-bold text-yellow-400;
+  }
+
+  /* --- Form Elements --- */
+  .form-label {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply mb-2 block text-sm font-medium text-gray-400;
+  }
+
+  .form-input {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-3 text-white placeholder-gray-500 focus: !border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400/20;
+  }
+
+  .form-error {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply mt-1 text-xs text-red-500;
+  }
+
+  /* --- Search Command --- */
+  .search-command {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply rounded-lg border border-gray-600 bg-gray-800;
+  }
+
+  .search-input {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply border-b border-gray-600 px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none;
+  }
+
+  .search-empty {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply py-6 text-center text-sm text-gray-500;
+  }
+
+  .search-group-heading {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide;
+  }
+
+  .search-item {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-700 transition-colors;
+  }
+
+  /* --- Watchlist Table --- */
+  .watchlist-table {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply w-full rounded-lg border border-gray-600 bg-gray-800 overflow-hidden;
+  }
+
+  .watchlist-header {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply bg-gray-700 text-left text-xs font-semibold text-gray-400 uppercase tracking-wide;
+  }
+
+  .watchlist-row {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply border-t border-gray-600 hover:bg-gray-700 transition-colors;
+  }
+
+  .watchlist-cell {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply px-6 py-4 text-sm text-white;
+  }
+
+  /* --- Price Change Indicators --- */
+  .price-up {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply text-teal-400;
+  }
+
+  .price-down {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply text-red-500;
+  }
+
+  /* --- Cards & Panels --- */
+  .stat-card {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply rounded-lg border border-gray-600 bg-gray-800 p-6;
+  }
+
+  .stat-label {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply text-sm font-medium text-gray-400;
+  }
+
+  .stat-value {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply text-2xl font-bold text-white;
+  }
+
+  /* --- Loading States --- */
+  .skeleton {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply animate-pulse rounded bg-gray-700;
+  }
+
+  /* --- Badges --- */
+  .badge {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .badge-success {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply bg-teal-400/20 text-teal-400;
+  }
+
+  .badge-error {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply bg-red-500/20 text-red-500;
+  }
+
+  .badge-warning {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply bg-orange-500/20 text-orange-500;
+  }
+
+  .badge-info {
+    /* biome-ignore lint/suspicious/noUnknownAtRules: biome-ignore lint: false positive */
+    @apply bg-blue-600/20 text-blue-600;
+  }
 }
 
 /* === Hide Scrollbars (default and hover styles) === */

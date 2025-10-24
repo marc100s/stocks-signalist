@@ -1,19 +1,19 @@
 // biome-ignore assist/source/organizeImports: <biome-ignore lint: false positive>
 import { type NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
 
-export async function middleware(request: NextRequest) {
-  const sessionCookie = getSessionCookie(request);
+// This file used to implement a catch-all redirect for unauthenticated users
+// but it conflicted with the real middleware at `middleware/index.ts` and
+// intercepted auth verification routes (causing 307 redirects).
+//
+// Keep a no-op middleware here to avoid accidental route interception. The
+// real auth middleware lives in `middleware/index.ts`.
 
-  if (!sessionCookie) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
+export async function middleware(_request: NextRequest) {
   return NextResponse.next();
 }
 
+// Intentionally use a matcher that doesn't match normal app routes so this
+// middleware is effectively inert.
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sign-in|sign-up|assets).*)",
-  ],
+  matcher: ["/__noop__"],
 };

@@ -141,7 +141,7 @@ export const WELCOME_EMAIL_TEMPLATE = `<!DOCTYPE html>
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 40px 0; width: 100%;">
                                 <tr>
                                     <td align="center">
-                                        <a href="https://stock-market-dev.vercel.app/" style="display: block; width: 100%; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%); color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center; box-sizing: border-box;">
+                                        <a href="https://stock-market-dev.vercel.app/" style="display: block; width: 100%; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%); color: FDD458; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center; box-sizing: border-box;">
                                             Log In & Go to Dashboard
                                         </a>
                                     </td>
@@ -483,7 +483,7 @@ export const STOCK_ALERT_UPPER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 30px;">
                                 <tr>
                                     <td align="center">
-                                        <a href="https://stock-market-dev.vercel.app/" style="display: block; width: 100%; max-width: 100%; box-sizing: border-box; color: #000000; background-color: #E8BA40; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;">
+                                        <a href="https://stock-market-dev.vercel.app/" style="display: block; width: 100%; max-width: 100%; box-sizing: border-box; color: #FDD458; background-color: #E8BA40; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;">
                                             View Dashboard
                                         </a>
                                     </td>
@@ -692,7 +692,7 @@ export const STOCK_ALERT_LOWER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 30px;">
                                 <tr>
                                     <td align="center">
-                                        <a href="https://stock-market-dev.vercel.app/" style="display: block; width: 100%; max-width: 100%; box-sizing: border-box; background-color: #E8BA40; color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;">
+                                        <a href="https://stock-market-dev.vercel.app/" style="display: block; width: 100%; max-width: 100%; box-sizing: border-box; background-color: #E8BA40; color: #FDD458; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;">
                                             View Dashboard
                                         </a>
                                     </td>
@@ -1079,7 +1079,7 @@ export const INACTIVE_USER_REMINDER_EMAIL_TEMPLATE = `<!DOCTYPE html>
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 20px 0; width: 100%;">
                                 <tr>
                                     <td align="center" class="mobile-button">
-                                        <a href="{{dashboardUrl}}" style="display: inline-block; background: #E8BA40; color: #000000; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;  width: 100%;">
+                                        <a href="{{dashboardUrl}}" style="display: inline-block; background: #E8BA40; color: #FDD458; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 500; line-height: 1; text-align: center;  width: 100%;">
                                             Return to Dashboard
                                         </a>
                                     </td>
@@ -1201,8 +1201,8 @@ export const EMAIL_VERIFICATION_TEMPLATE = `<!DOCTYPE html>
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 30px 0; width: 100%;">
                                 <tr>
                                     <td align="center" class="mobile-button">
-                                        <a href="{{verificationUrl}}" style="display: inline-block; background: #FDD458 !important; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%) !important; color: #000000 !important; text-decoration: none !important; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; line-height: 1; text-align: center; mso-padding-alt: 0; text-underline-color: #000000;">
-                                            <span style="color: #000000 !important; font-weight: 600;">Verify Email Address</span>
+                                        <a href="{{verificationUrl}}" style="display: inline-block; background: #FDD458 !important; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%) !important; color: #FDD458 !important; text-decoration: none !important; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; line-height: 1; text-align: center; mso-padding-alt: 0; text-underline-color: #FDD458;">
+                                            <span style="color: #FDD458 !important; font-weight: 600;">Verify Email Address</span>
                                         </a>
                                     </td>
                                 </tr>
@@ -1317,8 +1317,8 @@ export const PASSWORD_RESET_TEMPLATE = `<!DOCTYPE html>
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 30px 0; width: 100%;">
                                 <tr>
                                     <td align="center">
-                                        <a href="{{resetUrl}}" style="display: inline-block; background: #FDD458 !important; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%) !important; color: #000000 !important; text-decoration: none !important; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; line-height: 1; text-align: center; mso-padding-alt: 0; text-underline-color: #000000;">
-                                            <span style="color: #000000 !important; font-weight: 600;">Reset Password</span>
+                                        <a href="{{resetUrl}}" style="display: inline-block; background: #FDD458 !important; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%) !important; color: #FDD458 !important; text-decoration: none !important; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; line-height: 1; text-align: center; mso-padding-alt: 0; text-underline-color: #FDD458;">
+                                            <span style="color: #FDD458 !important; font-weight: 600;">Reset Password</span>
                                         </a>
                                     </td>
                                 </tr>

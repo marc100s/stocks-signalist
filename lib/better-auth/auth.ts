@@ -43,6 +43,10 @@ export const getAuth = async () => {
     database: mongodbAdapter(db as Db),
     secret: process.env.BETTER_AUTH_SECRET,
     baseURL,
+    emailVerification: {
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+    },
     emailAndPassword: {
       enabled: true,
       disableSignUp: false,
@@ -58,16 +62,20 @@ export const getAuth = async () => {
         url: string;
       }) => {
         try {
+          // Log the URL in both dev and production to debug
+          console.log("\n" + "=".repeat(80));
+          console.log(`📧 EMAIL VERIFICATION (${isDevelopment ? 'Development' : 'Production'} Mode)`);
+          console.log("=".repeat(80));
+          console.log("To:", user.email);
+          console.log("Name:", user.name || "User");
+          console.log("Verification URL:");
+          console.log(url);
+          console.log("URL Length:", url.length);
+          console.log("Has token param:", url.includes('token='));
+          console.log("=".repeat(80) + "\n");
+
           if (isDevelopment) {
-            // In development, log the verification URL instead of sending email
-            console.log("\n" + "=".repeat(80));
-            console.log("📧 EMAIL VERIFICATION (Development Mode)");
-            console.log("=".repeat(80));
-            console.log("To:", user.email);
-            console.log("Name:", user.name || "User");
-            console.log("Verification URL:");
-            console.log(url);
-            console.log("=".repeat(80) + "\n");
+            // In development, just log - don't send email
             return;
           }
 

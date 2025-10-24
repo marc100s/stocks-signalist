@@ -64,14 +64,18 @@ export const getAuth = async () => {
         try {
           // Log the URL in both dev and production to debug
           console.log("\n" + "=".repeat(80));
-          console.log(`📧 EMAIL VERIFICATION (${isDevelopment ? 'Development' : 'Production'} Mode)`);
+          console.log(
+            `📧 EMAIL VERIFICATION (${
+              isDevelopment ? "Development" : "Production"
+            } Mode)`
+          );
           console.log("=".repeat(80));
           console.log("To:", user.email);
           console.log("Name:", user.name || "User");
           console.log("Verification URL:");
           console.log(url);
           console.log("URL Length:", url.length);
-          console.log("Has token param:", url.includes('token='));
+          console.log("Has token param:", url.includes("token="));
           console.log("=".repeat(80) + "\n");
 
           if (isDevelopment) {

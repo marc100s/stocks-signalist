@@ -43,9 +43,8 @@ export const getAuth = async () => {
     database: mongodbAdapter(db as Db),
     secret: process.env.BETTER_AUTH_SECRET,
     baseURL,
-    emailVerification: {
-      sendOnSignUp: true,
-      autoSignInAfterVerification: true,
+    advanced: {
+      generateId: () => crypto.randomUUID(),
     },
     emailAndPassword: {
       enabled: true,
@@ -54,6 +53,7 @@ export const getAuth = async () => {
       minPasswordLength: 8,
       maxPasswordLength: 128,
       autoSignIn: isDevelopment, // Auto sign-in in development
+      sendVerificationOnSignUp: !isDevelopment, // Only send verification in production
       sendVerificationEmail: async ({
         user,
         url,

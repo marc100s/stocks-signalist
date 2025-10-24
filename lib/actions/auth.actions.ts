@@ -27,7 +27,12 @@ export const signUpWithEmail = async (data: unknown) => {
     const authInstance = await auth;
 
     const response = await authInstance.api.signUpEmail({
-      body: { email, password, name: fullName },
+      body: {
+        email,
+        password,
+        name: fullName,
+        callbackURL: "/verify-email", // Redirect after email verification
+      },
     });
 
     if (response) {

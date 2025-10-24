@@ -169,8 +169,8 @@ NODE_ENV="production"                                    # Vercel sets automatic
 NEXT_PUBLIC_BASE_URL=https://stock-market-dev.vercel.app
 BETTER_AUTH_URL=https://stock-market-dev.vercel.app     # MUST match actual domain
 MONGODB_URI="...SignalisticsDB..."                       # Production database
-NODEMAILER_EMAIL="marc@ellipsi.net"                      # Gmail for sending emails
-NODEMAILER_PASSWORD="avdrruiapbxjfiop"                   # Gmail app password
+NODEMAILER_EMAIL="useradmin@email.com"                      # Gmail for sending emails
+NODEMAILER_PASSWORD="passwordcustomized"                   # Gmail app password
 ```
 
 ## Files Modified

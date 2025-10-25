@@ -4,6 +4,7 @@ import {
   WELCOME_EMAIL_TEMPLATE,
   EMAIL_VERIFICATION_TEMPLATE,
   PASSWORD_RESET_TEMPLATE,
+  MAGIC_LINK_TEMPLATE,
 } from "./templates";
 
 export const transporter = nodemailer.createTransport({
@@ -103,6 +104,29 @@ export const sendPasswordResetEmail = async ({
     to: email,
     subject: "Reset Your Password - Signalist",
     text: `Hi ${name},\n\nWe received a request to reset your password. Click this link to reset it: ${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, you can safely ignore this email.\n\nBest regards,\nThe Signalist Team`,
+    html: htmlTemplate,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+export const sendMagicLinkEmail = async ({
+  email,
+  magicLinkUrl,
+}: {
+  email: string;
+  magicLinkUrl: string;
+}): Promise<void> => {
+  const htmlTemplate = MAGIC_LINK_TEMPLATE.replace(
+    /{{magicLinkUrl}}/g,
+    magicLinkUrl
+  );
+
+  const mailOptions = {
+    from: `"Signalist" <signalist@ellipsi.net>`,
+    to: email,
+    subject: "🔐 Sign In to Signalist - Magic Link",
+    text: `Click this link to sign in to Signalist (expires in 5 minutes): ${magicLinkUrl}\n\nIf you didn't request this, you can safely ignore this email.\n\nBest regards,\nThe Signalist Team`,
     html: htmlTemplate,
   };
 

@@ -3,10 +3,12 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { connectToDatabase } from "@/database/mongoose";
 import { nextCookies } from "better-auth/next-js";
+import { magicLink } from "better-auth/plugins";
 import type { Db } from "mongodb";
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendMagicLinkEmail,
 } from "@/lib/nodemailer";
 
 let authInstance: ReturnType<typeof betterAuth> | null = null;
@@ -137,7 +139,45 @@ export const getAuth = async () => {
       expiresIn: 60 * 60 * 24 * 7, // 7 days
       updateAge: 60 * 60 * 24, // 1 day
     },
-    plugins: [nextCookies()],
+    plugins: [
+      nextCookies(),
+      magicLink({
+        expiresIn: 60 * 5, // 5 minutes
+        disableSignUp: false, // Allow auto sign-up for new users
+        async sendMagicLink({ email, url, token }, request) {
+          try {
+            console.log("\n" + "=".repeat(80));
+            console.log(
+              `🔐 MAGIC LINK (${
+                isDevelopment ? "Development" : "Production"
+              } Mode)`
+            );
+            console.log("=".repeat(80));
+            console.log("To:", email);
+            console.log("Magic Link URL:", url);
+            console.log("Token:", token);
+            console.log("URL includes token:", url.includes("token="));
+            console.log("=".repeat(80) + "\n");
+
+            if (isDevelopment) {
+              // In development, just log the link
+              return;
+            }
+
+            // In production, send actual email
+            await sendMagicLinkEmail({
+              email,
+              magicLinkUrl: url,
+            });
+
+            console.log("✅ Magic link sent successfully to:", email);
+          } catch (error) {
+            console.error("❌ Error sending magic link:", error);
+            throw error;
+          }
+        },
+      }),
+    ],
   });
 
   return authInstance;

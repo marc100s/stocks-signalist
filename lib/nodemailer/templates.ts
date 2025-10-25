@@ -1248,6 +1248,114 @@ export const EMAIL_VERIFICATION_TEMPLATE = `<!DOCTYPE html>
 </body>
 </html>`;
 
+export const MAGIC_LINK_TEMPLATE = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Sign In to Signalist</title>
+    <style type="text/css">
+        @media (prefers-color-scheme: dark) {
+            .email-container {
+                background-color: #141414 !important;
+                border: 1px solid #30333A !important;
+            }
+            .dark-text {
+                color: #ffffff !important;
+            }
+            .dark-text-secondary {
+                color: #9ca3af !important;
+            }
+            .dark-text-muted {
+                color: #6b7280 !important;
+            }
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            .mobile-padding {
+                padding: 24px !important;
+            }
+            .mobile-title {
+                font-size: 24px !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #050505; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #050505;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" class="email-container" style="max-width: 600px; background-color: #141414; border-radius: 8px; border: 1px solid #30333A;">
+                    
+                    <tr>
+                        <td style="padding: 40px 40px 20px 40px;">
+                            <img src="https://ik.imagekit.io/a6fkjou7d/logo.png?updatedAt=1756378431634" alt="Signalist Logo" width="150" style="max-width: 100%; height: auto;">
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="mobile-padding" style="padding: 40px;">
+                            
+                            <h1 class="mobile-title dark-text" style="margin: 0 0 30px 0; font-size: 28px; font-weight: 600; color: #FDD458; line-height: 1.2;">
+                                🔐 Sign In to Signalist
+                            </h1>
+                            
+                            <p class="dark-text-secondary" style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: #CCDADC;">
+                                Click the button below to securely sign in to your Signalist account. No password needed!
+                            </p>
+                            
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 0 30px 0; width: 100%;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{{magicLinkUrl}}" style="display: inline-block; background: #FDD458 !important; background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%) !important; color: #000000 !important; text-decoration: none !important; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; line-height: 1; text-align: center; mso-padding-alt: 0;">
+                                            <span style="color: #000000 !important; font-weight: 600;">Sign In to Signalist</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p class="dark-text-muted" style="margin: 0 0 30px 0; font-size: 14px; line-height: 1.6; color: #6b7280;">
+                                Or copy and paste this link into your browser:
+                            </p>
+                            
+                            <p style="margin: 0 0 30px 0; font-size: 14px; line-height: 1.4; color: #FDD458; word-break: break-all;">
+                                {{magicLinkUrl}}
+                            </p>
+                            
+                            <div style="background-color: #1f2937; border-radius: 8px; padding: 20px; margin-bottom: 30px; border: 1px solid #374151;">
+                                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #9ca3af;">
+                                    ⏰ This link will expire in 5 minutes for security.
+                                </p>
+                            </div>
+                            
+                            <p class="dark-text-muted" style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #6b7280;">
+                                If you didn't request this email, you can safely ignore it.
+                            </p>
+                            
+                            <div style="text-align: center; margin: 40px 0 0 0; padding-top: 30px; border-top: 1px solid #30333A;">
+                                <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
+                                    Signalist HQ, 200 Market Street, San Francisco, CA 94105
+                                </p>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #CCDADC !important;">
+                                    © 2025 Signalist
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;
+
 export const PASSWORD_RESET_TEMPLATE = `<!DOCTYPE html>
 <html lang="en">
 <head>

@@ -192,3 +192,34 @@ export const updateEmail = async (_newEmail: string) => {
     };
   }
 };
+
+export const sendMagicLink = async (email: string) => {
+  try {
+    // Use the correct Better Auth API method for magic link
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/auth/sign-in/magic-link`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          callbackURL: "/",
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to send magic link");
+    }
+
+    return { success: true };
+  } catch (e) {
+    console.error("Error sending magic link:", e);
+    return {
+      success: false,
+      message: e instanceof Error ? e.message : "Failed to send magic link",
+    };
+  }
+};

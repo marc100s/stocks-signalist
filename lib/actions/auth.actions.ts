@@ -8,6 +8,8 @@ import {
   signInSchema,
   forgotPasswordSchema,
 } from "@/lib/schemas";
+import UserProfile from "@/database/models/userProfile.model";
+import { connectToDatabase } from "@/database/mongoose";
 
 export const signUpWithEmail = async (data: unknown) => {
   try {
@@ -34,18 +36,25 @@ export const signUpWithEmail = async (data: unknown) => {
       },
     });
 
+    // Store user profile data temporarily - welcome email sent after verification
     if (response) {
-      await inngest.send({
-        name: "app/user.created",
-        data: {
+      try {
+        await connectToDatabase();
+        await UserProfile.create({
           email,
           name: fullName,
           country,
           investmentGoals,
           riskTolerance,
           preferredIndustry,
-        },
-      });
+        });
+        console.log(
+          "✅ User signed up, profile saved. Awaiting email verification."
+        );
+      } catch (profileError) {
+        // Non-critical error - user is created, just log it
+        console.error("⚠️  Failed to save user profile:", profileError);
+      }
     }
 
     return { success: true, data: response };

@@ -10,6 +10,8 @@ import {
   sendPasswordResetEmail,
   sendMagicLinkEmail,
 } from "@/lib/nodemailer";
+import UserProfile from "@/database/models/userProfile.model";
+import { inngest } from "@/lib/inngest/client";
 
 let authInstance: ReturnType<typeof betterAuth> | null = null;
 let initPromise: Promise<ReturnType<typeof betterAuth>> | null = null;
@@ -65,8 +67,38 @@ export const getAuth = async () => {
         autoSignInAfterVerification: true,
         onEmailVerification: async (user) => {
           // Callback after successful email verification
-          if (isDevelopment) {
-            console.log("✅ Email verified successfully for:", user.email);
+          console.log("✅ Email verified successfully for:", user.email);
+
+          // Trigger welcome email via Inngest after verification
+          try {
+            const userProfile = await UserProfile.findOne({
+              email: user.email,
+            });
+
+            if (userProfile) {
+              await inngest.send({
+                name: "app/user.created",
+                data: {
+                  email: user.email,
+                  name: user.name,
+                  country: userProfile.country,
+                  investmentGoals: userProfile.investmentGoals,
+                  riskTolerance: userProfile.riskTolerance,
+                  preferredIndustry: userProfile.preferredIndustry,
+                },
+              });
+
+              // Clean up profile data after sending event
+              await UserProfile.deleteOne({ email: user.email });
+              console.log(
+                "✅ Welcome email triggered for verified user:",
+                user.email
+              );
+            } else {
+              console.warn("⚠️  No profile data found for user:", user.email);
+            }
+          } catch (error) {
+            console.error("❌ Error triggering welcome email:", error);
           }
         },
         sendVerificationEmail: async ({ user, url, token }) => {

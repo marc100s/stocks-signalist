@@ -12,6 +12,7 @@ import {
 } from "@/lib/nodemailer";
 
 let authInstance: ReturnType<typeof betterAuth> | null = null;
+let initPromise: Promise<ReturnType<typeof betterAuth>> | null = null;
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -31,156 +32,168 @@ export const getAuth = async () => {
     return authInstance;
   }
 
-  const mongoose = await connectToDatabase();
-  const db = mongoose.connection.db;
-
-  if (!db) {
-    throw new Error("Database connection failed");
+  if (initPromise) {
+    return initPromise;
   }
 
-  const baseURL = getBaseURL();
-  console.log(`🔐 Better Auth initialized with baseURL: ${baseURL}`);
+  initPromise = (async () => {
+    const mongoose = await connectToDatabase();
+    const db = mongoose.connection.db;
 
-  authInstance = betterAuth({
-    database: mongodbAdapter(db as Db),
-    secret: process.env.BETTER_AUTH_SECRET,
-    baseURL,
-    emailAndPassword: {
-      enabled: true,
-      requireEmailVerification: !isDevelopment,
-      autoSignIn: isDevelopment,
-    },
-    emailVerification: {
-      sendOnSignUp: !isDevelopment,
-      autoSignInAfterVerification: true,
-      sendVerificationEmail: async ({ user, url, token }) => {
-        try {
-          // Log in all environments for debugging
-          console.log("\n" + "=".repeat(80));
-          console.log(
-            `📧 EMAIL VERIFICATION (${
-              isDevelopment ? "Development" : "Production"
-            } Mode)`
-          );
-          console.log("=".repeat(80));
-          console.log("To:", user.email);
-          console.log("Name:", user.name || "User");
-          console.log("Verification URL:", url);
-          console.log("Token:", token);
-          console.log("URL includes token:", url.includes("token="));
-          console.log("=".repeat(80) + "\n");
+    if (!db) {
+      throw new Error("Database connection failed");
+    }
 
-          if (isDevelopment) {
-            // In development, just log
-            return;
-          }
+    const baseURL = getBaseURL();
 
-          // In production, send actual email
-          await sendVerificationEmail({
-            email: user.email,
-            name: user.name || "User",
-            verificationUrl: url,
-          });
+    // Log only in development to avoid noisy builds
+    if (isDevelopment) {
+      console.log(`🔐 Better Auth initializing with baseURL: ${baseURL}`);
+    }
 
-          console.log(
-            "✅ Verification email sent successfully to:",
-            user.email
-          );
-        } catch (error) {
-          console.error("❌ Error sending verification email:", error);
-          throw error;
-        }
+    const instance = betterAuth({
+      database: mongodbAdapter(db as Db),
+      secret: process.env.BETTER_AUTH_SECRET,
+      baseURL,
+      emailAndPassword: {
+        enabled: true,
+        requireEmailVerification: !isDevelopment,
+        autoSignIn: isDevelopment,
       },
-      sendResetPassword: async ({
-        user,
-        url,
-      }: {
-        user: { email: string; name?: string };
-        url: string;
-      }) => {
-        try {
-          console.log("\n" + "=".repeat(80));
-          console.log(
-            `🔐 PASSWORD RESET (${
-              isDevelopment ? "Development" : "Production"
-            } Mode)`
-          );
-          console.log("=".repeat(80));
-          console.log("To:", user.email);
-          console.log("Reset URL:", url);
-          console.log("=".repeat(80) + "\n");
-
-          if (isDevelopment) {
-            return;
-          }
-
-          await sendPasswordResetEmail({
-            email: user.email,
-            name: user.name || "User",
-            resetUrl: url,
-          });
-
-          console.log(
-            "✅ Password reset email sent successfully to:",
-            user.email
-          );
-        } catch (error) {
-          console.error("❌ Error sending password reset email:", error);
-          throw error;
-        }
-      },
-    },
-    account: {
-      accountLinking: {
-        enabled: false,
-      },
-    },
-    session: {
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
-      updateAge: 60 * 60 * 24, // 1 day
-    },
-    plugins: [
-      nextCookies(),
-      magicLink({
-        expiresIn: 60 * 5, // 5 minutes
-        disableSignUp: false, // Allow auto sign-up for new users
-        async sendMagicLink({ email, url, token }, request) {
+      emailVerification: {
+        sendOnSignUp: !isDevelopment,
+        autoSignInAfterVerification: true,
+        sendVerificationEmail: async ({ user, url, token }) => {
           try {
+            // Log in all environments for debugging
             console.log("\n" + "=".repeat(80));
             console.log(
-              `🔐 MAGIC LINK (${
+              `📧 EMAIL VERIFICATION (${
                 isDevelopment ? "Development" : "Production"
               } Mode)`
             );
             console.log("=".repeat(80));
-            console.log("To:", email);
-            console.log("Magic Link URL:", url);
+            console.log("To:", user.email);
+            console.log("Name:", user.name || "User");
+            console.log("Verification URL:", url);
             console.log("Token:", token);
             console.log("URL includes token:", url.includes("token="));
             console.log("=".repeat(80) + "\n");
 
             if (isDevelopment) {
-              // In development, just log the link
+              // In development, just log
               return;
             }
 
             // In production, send actual email
-            await sendMagicLinkEmail({
-              email,
-              magicLinkUrl: url,
+            await sendVerificationEmail({
+              email: user.email,
+              name: user.name || "User",
+              verificationUrl: url,
             });
 
-            console.log("✅ Magic link sent successfully to:", email);
+            console.log(
+              "✅ Verification email sent successfully to:",
+              user.email
+            );
           } catch (error) {
-            console.error("❌ Error sending magic link:", error);
+            console.error("❌ Error sending verification email:", error);
             throw error;
           }
         },
-      }),
-    ],
-  });
+        sendResetPassword: async ({
+          user,
+          url,
+        }: {
+          user: { email: string; name?: string };
+          url: string;
+        }) => {
+          try {
+            console.log("\n" + "=".repeat(80));
+            console.log(
+              `🔐 PASSWORD RESET (${
+                isDevelopment ? "Development" : "Production"
+              } Mode)`
+            );
+            console.log("=".repeat(80));
+            console.log("To:", user.email);
+            console.log("Reset URL:", url);
+            console.log("=".repeat(80) + "\n");
 
-  return authInstance;
+            if (isDevelopment) {
+              return;
+            }
+
+            await sendPasswordResetEmail({
+              email: user.email,
+              name: user.name || "User",
+              resetUrl: url,
+            });
+
+            console.log(
+              "✅ Password reset email sent successfully to:",
+              user.email
+            );
+          } catch (error) {
+            console.error("❌ Error sending password reset email:", error);
+            throw error;
+          }
+        },
+      },
+      account: {
+        accountLinking: {
+          enabled: false,
+        },
+      },
+      session: {
+        expiresIn: 60 * 60 * 24 * 7, // 7 days
+        updateAge: 60 * 60 * 24, // 1 day
+      },
+      plugins: [
+        nextCookies(),
+        magicLink({
+          expiresIn: 60 * 5, // 5 minutes
+          disableSignUp: false, // Allow auto sign-up for new users
+          async sendMagicLink({ email, url, token }) {
+            try {
+              console.log("\n" + "=".repeat(80));
+              console.log(
+                `🔐 MAGIC LINK (${
+                  isDevelopment ? "Development" : "Production"
+                } Mode)`
+              );
+              console.log("=".repeat(80));
+              console.log("To:", email);
+              console.log("Magic Link URL:", url);
+              console.log("Token:", token);
+              console.log("URL includes token:", url.includes("token="));
+              console.log("=".repeat(80) + "\n");
+
+              if (isDevelopment) {
+                // In development, just log the link
+                return;
+              }
+
+              // In production, send actual email
+              await sendMagicLinkEmail({
+                email,
+                magicLinkUrl: url,
+              });
+
+              console.log("✅ Magic link sent successfully to:", email);
+            } catch (error) {
+              console.error("❌ Error sending magic link:", error);
+              throw error;
+            }
+          },
+        }),
+      ],
+    });
+
+    authInstance = instance;
+    initPromise = null;
+    return instance;
+  })();
+
+  return initPromise;
 };
-
-export const auth = await getAuth();

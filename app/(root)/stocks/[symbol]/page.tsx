@@ -1,6 +1,6 @@
 import TradingViewWidget from "@/components/TradingViewWidget";
 import WatchlistButton from "@/components/WatchlistButton";
-import { auth } from "@/lib/better-auth/auth";
+import { getAuth } from "@/lib/better-auth/auth";
 import { headers } from "next/headers";
 import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
 import {
@@ -17,6 +17,7 @@ export default async function StockDetails({ params }: StockDetailsPageProps) {
   const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`;
 
   // Get session and watchlist status
+  const auth = await getAuth();
   const session = await auth.api.getSession({
     headers: await headers(),
   });

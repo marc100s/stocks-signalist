@@ -16,7 +16,7 @@ const SignInPage = () => {
   const router = useRouter();
   const [magicLinkEmail, setMagicLinkEmail] = useState("");
   const [sendingMagicLink, setSendingMagicLink] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -56,7 +56,7 @@ const SignInPage = () => {
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!magicLinkEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(magicLinkEmail)) {
       toast.error("Please enter a valid email address");
       return;
@@ -67,7 +67,8 @@ const SignInPage = () => {
       const result = await sendMagicLink(magicLinkEmail);
       if (result.success) {
         toast.success("Magic link sent!", {
-          description: "Check your email for the sign-in link. It expires in 5 minutes.",
+          description:
+            "Check your email for the sign-in link. It expires in 5 minutes.",
         });
         setMagicLinkEmail("");
       } else {
@@ -88,7 +89,7 @@ const SignInPage = () => {
   return (
     <>
       <h1 className="form-title">Welcome Back!</h1>
-      
+
       {/* Traditional Email/Password Sign In */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <InputField
@@ -140,7 +141,9 @@ const SignInPage = () => {
       {/* Magic Link Sign In */}
       <form onSubmit={handleMagicLink} className="space-y-4">
         <div className="space-y-2">
-          <label htmlFor="magic-link-email" className="form-label">Sign in without password</label>
+          <label htmlFor="magic-link-email" className="form-label">
+            Sign in without password
+          </label>
           <input
             id="magic-link-email"
             type="email"

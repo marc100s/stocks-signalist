@@ -337,3 +337,8 @@ export const WATCHLIST_TABLE_HEADER = [
   "Alert",
   "Action",
 ];
+
+// Global feature flags
+export const FEATURES = {
+  gpt5Enabled: process.env.NEXT_PUBLIC_ENABLE_GPT5 === "true",
+};

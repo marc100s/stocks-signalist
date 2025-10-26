@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/better-auth/auth";
+import { getAuth } from "@/lib/better-auth/auth";
 import { inngest } from "@/lib/inngest/client";
 import { headers } from "next/headers";
 import {
@@ -24,7 +24,7 @@ export const signUpWithEmail = async (data: unknown) => {
       preferredIndustry,
     } = validatedData;
 
-    const authInstance = await auth;
+    const authInstance = await getAuth();
 
     const response = await authInstance.api.signUpEmail({
       body: {
@@ -60,7 +60,7 @@ export const signUpWithEmail = async (data: unknown) => {
 
 export const signOut = async () => {
   try {
-    const authInstance = await auth;
+    const authInstance = await getAuth();
     await authInstance.api.signOut({ headers: await headers() });
     return { success: true };
   } catch (e) {
@@ -75,7 +75,7 @@ export const signInWithEmail = async (data: unknown) => {
     const validatedData = signInSchema.parse(data);
     const { email, password } = validatedData;
 
-    const authInstance = await auth;
+    const authInstance = await getAuth();
 
     const response = await authInstance.api.signInEmail({
       body: { email, password },
@@ -118,7 +118,7 @@ export const forgotPassword = async (data: unknown) => {
     const validatedData = forgotPasswordSchema.parse(data);
     const { email } = validatedData;
 
-    const authInstance = await auth;
+    const authInstance = await getAuth();
 
     await authInstance.api.forgetPassword({
       body: { email, redirectTo: "/reset-password/confirm" },
@@ -134,7 +134,7 @@ export const forgotPassword = async (data: unknown) => {
 
 export const resetPassword = async (token: string, newPassword: string) => {
   try {
-    const authInstance = await auth;
+    const authInstance = await getAuth();
 
     await authInstance.api.resetPassword({
       body: { token, newPassword },
@@ -158,7 +158,7 @@ export const changePassword = async (
   newPassword: string
 ) => {
   try {
-    const authInstance = await auth;
+    const authInstance = await getAuth();
 
     await authInstance.api.changePassword({
       body: { currentPassword, newPassword },
@@ -197,7 +197,9 @@ export const sendMagicLink = async (email: string) => {
   try {
     // Use the correct Better Auth API method for magic link
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/auth/sign-in/magic-link`,
+      `${
+        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+      }/api/auth/sign-in/magic-link`,
       {
         method: "POST",
         headers: {

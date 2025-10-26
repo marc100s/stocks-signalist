@@ -1,10 +1,11 @@
-import { auth } from "@/lib/better-auth/auth";
+import { getAuth } from "@/lib/better-auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import WatchlistTable from "@/components/WatchlistTable";
 import { getWatchlistWithQuotes } from "@/lib/actions/watchlist.actions";
 
 export default async function WatchlistPage() {
+  const auth = await getAuth();
   const session = await auth.api.getSession({
     headers: await headers(),
   });

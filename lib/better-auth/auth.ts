@@ -63,6 +63,12 @@ export const getAuth = async () => {
       emailVerification: {
         sendOnSignUp: !isDevelopment,
         autoSignInAfterVerification: true,
+        onEmailVerification: async (user) => {
+          // Callback after successful email verification
+          if (isDevelopment) {
+            console.log("✅ Email verified successfully for:", user.email);
+          }
+        },
         sendVerificationEmail: async ({ user, url, token }) => {
           try {
             // Log in all environments for debugging

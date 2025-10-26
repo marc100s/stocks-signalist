@@ -15,6 +15,7 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     const verifyEmail = async () => {
       const token = searchParams.get("token");
+      const callbackURL = searchParams.get("callbackURL") || "/";
 
       if (!token) {
         setStatus("error");
@@ -23,29 +24,40 @@ export default function VerifyEmailPage() {
       }
 
       try {
-        const response = await fetch("/api/auth/verify-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
+        // Better Auth verify-email endpoint expects GET with query params
+        const verifyURL = new URL(
+          "/api/auth/verify-email",
+          window.location.origin
+        );
+        verifyURL.searchParams.set("token", token);
+        verifyURL.searchParams.set("callbackURL", callbackURL);
+
+        const response = await fetch(verifyURL.toString(), {
+          method: "GET",
+          redirect: "manual", // Don't follow redirects automatically
         });
 
-        const data = await response.json();
-
-        if (response.ok) {
+        // Better Auth redirects on success (status 307/302)
+        if (response.status === 307 || response.status === 302 || response.ok) {
           setStatus("success");
           setMessage("Your email has been verified successfully!");
 
-          // Redirect to sign-in after 3 seconds
+          // Redirect to sign-in after 2 seconds
           setTimeout(() => {
             router.push("/sign-in");
-          }, 3000);
+          }, 2000);
         } else {
+          // Try to parse error message
+          let errorMessage = "Verification failed. The link may have expired.";
+          try {
+            const data = await response.json();
+            if (data.message) errorMessage = data.message;
+          } catch {
+            // If response isn't JSON, use default message
+          }
+
           setStatus("error");
-          setMessage(
-            data.message || "Verification failed. The link may have expired."
-          );
+          setMessage(errorMessage);
         }
       } catch (error) {
         setStatus("error");

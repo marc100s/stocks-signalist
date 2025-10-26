@@ -20,10 +20,11 @@ export const sendWelcomeEmail = async ({
   name,
   intro,
 }: WelcomeEmailData) => {
-  const htmlTemplate = WELCOME_EMAIL_TEMPLATE.replace("{{name}}", name).replace(
-    "{{intro}}",
-    intro
-  );
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const htmlTemplate = WELCOME_EMAIL_TEMPLATE.replace("{{name}}", name)
+    .replace("{{intro}}", intro)
+    .replace(/{{baseUrl}}/g, baseUrl);
 
   const mailOptions = {
     from: `"Signalist<signalist@ellipsi.net>"`,
@@ -44,10 +45,11 @@ export const sendNewsSummaryEmail = async ({
   date: string;
   newsContent: string;
 }): Promise<void> => {
-  const htmlTemplate = NEWS_SUMMARY_EMAIL_TEMPLATE.replace(
-    "{{date}}",
-    date
-  ).replace("{{newsContent}}", newsContent);
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const htmlTemplate = NEWS_SUMMARY_EMAIL_TEMPLATE.replace("{{date}}", date)
+    .replace("{{newsContent}}", newsContent)
+    .replace(/{{baseUrl}}/g, baseUrl);
 
   const mailOptions = {
     from: `"Signalist News" <signalist@jsmastery.pro>`,
@@ -94,10 +96,11 @@ export const sendPasswordResetEmail = async ({
   name: string;
   resetUrl: string;
 }): Promise<void> => {
-  const htmlTemplate = PASSWORD_RESET_TEMPLATE.replace(
-    /{{name}}/g,
-    name
-  ).replace(/{{resetUrl}}/g, resetUrl);
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const htmlTemplate = PASSWORD_RESET_TEMPLATE.replace(/{{name}}/g, name)
+    .replace(/{{resetUrl}}/g, resetUrl)
+    .replace(/{{baseUrl}}/g, baseUrl);
 
   const mailOptions = {
     from: `"Signalist" <signalist@ellipsi.net>`,
@@ -117,10 +120,12 @@ export const sendMagicLinkEmail = async ({
   email: string;
   magicLinkUrl: string;
 }): Promise<void> => {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const htmlTemplate = MAGIC_LINK_TEMPLATE.replace(
     /{{magicLinkUrl}}/g,
     magicLinkUrl
-  );
+  ).replace(/{{baseUrl}}/g, baseUrl);
 
   const mailOptions = {
     from: `"Signalist" <signalist@ellipsi.net>`,

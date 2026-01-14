@@ -9,4 +9,10 @@ const nextConfig: NextConfig = {
   },
 };
 
+module.exports = {
+  turbopack: {
+    root: process.cwd(),
+  },
+};
+
 export default nextConfig;

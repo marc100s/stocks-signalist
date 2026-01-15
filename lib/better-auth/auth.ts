@@ -54,7 +54,7 @@ export const getAuth = async () => {
     }
 
     const instance = betterAuth({
-      database: mongodbAdapter(db as Db),
+      database: mongodbAdapter(db as unknown as Db),
       secret: process.env.BETTER_AUTH_SECRET,
       baseURL,
       emailAndPassword: {

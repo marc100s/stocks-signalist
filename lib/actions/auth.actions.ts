@@ -129,7 +129,7 @@ export const forgotPassword = async (data: unknown) => {
 
     const authInstance = await getAuth();
 
-    await authInstance.api.forgetPassword({
+    await authInstance.api.requestPasswordReset({
       body: { email, redirectTo: "/reset-password/confirm" },
     });
 

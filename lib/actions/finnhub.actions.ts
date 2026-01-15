@@ -144,7 +144,7 @@ export const searchStocks = cache(
               const url = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${encodeURIComponent(
                 sym
               )}&token=${FINNHUB_API_KEY}`;
-              const profile = await fetchJSON<any>(url, 3600);
+              const profile = await fetchJSON<{ name?: string; ticker?: string; exchange?: string }>(url, 3600);
               return { sym, profile };
             } catch {
               // Silently handle API errors to prevent blocking other stocks
@@ -160,13 +160,13 @@ export const searchStocks = cache(
             const exchange = profile?.exchange;
             if (!name) return undefined;
 
-            const r: FinnhubSearchResult = {
+            const r: FinnhubSearchResult & { __exchange?: string } = {
               symbol,
               description: name,
               displaySymbol: symbol,
               type: "Common Stock",
+              __exchange: exchange,
             };
-            (r as any).__exchange = exchange;
             return r;
           })
           .filter((x): x is FinnhubSearchResult => Boolean(x));
@@ -183,7 +183,7 @@ export const searchStocks = cache(
           const symbol = r.symbol?.toUpperCase() || "";
           const name = r.description || symbol;
           const exchange =
-            (r.displaySymbol as string) || (r as any).__exchange || "US";
+            (r.displaySymbol as string) || (r as FinnhubSearchResult & { __exchange?: string }).__exchange || "US";
           return {
             symbol,
             name,

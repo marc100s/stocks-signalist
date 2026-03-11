@@ -1,0 +1,85 @@
+---
+title: "Authentication Overview"
+description: "Stocks Signalist uses Better Auth for secure authentication with multiple sign-in methods."
+---
+
+## Auth System
+
+Stocks Signalist uses [Better Auth](https://www.better-auth.com/) for authentication, supporting both traditional email/password and passwordless magic link sign-in.
+
+## Sign-In Methods
+
+<Columns cols={2}>
+  <Card title="Email & Password" icon="envelope">
+    Traditional sign-up with email verification. Users must verify their email before signing in (production only).
+  </Card>
+  <Card title="Magic Link" icon="wand-magic-sparkles" href="/authentication/magic-link">
+    Passwordless one-click authentication via email. Links expire in 5 minutes.
+  </Card>
+</Columns>
+
+## Features
+
+### Email Verification
+
+- **Development:** Disabled — users auto sign-in after signup, verification URLs logged to console
+- **Production:** Required — emails sent via Nodemailer with 24-hour token expiration
+
+See [Email Verification](/authentication/email-verification) for the full flow.
+
+### Password Reset
+
+- Users request a reset via email
+- Secure token-based flow with 1-hour expiration
+- In development, reset URLs are logged to console
+
+### Session Management
+
+- Secure session handling with HTTP-only cookies
+- Managed by Better Auth via the `nextCookies()` plugin
+- Sessions stored in the `session` MongoDB collection
+
+## Configuration
+
+Authentication is configured in `lib/better-auth/auth.ts`:
+
+```typescript
+import { betterAuth } from "better-auth";
+import { nextCookies } from "better-auth/next-js";
+import { magicLink } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  database: { /* MongoDB config */ },
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: process.env.NODE_ENV === "production",
+  },
+  plugins: [
+    nextCookies(),
+    magicLink({ expiresIn: 60 * 5 }),
+  ],
+});
+```
+
+The client is set up in `lib/auth-client.ts`:
+
+```typescript
+import { createAuthClient } from "better-auth/client";
+import { magicLinkClient } from "better-auth/client/plugins";
+
+export const authClient = createAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+  plugins: [magicLinkClient()],
+});
+```
+
+## Database Collections
+
+Better Auth creates these collections automatically (all **singular** names):
+
+| Collection | Purpose |
+| --- | --- |
+| `user` | User accounts with `emailVerified` flag |
+| `account` | Linked auth providers |
+| `session` | Active sessions |
+| `verification` | Ephemeral tokens (verification, reset, magic link) |

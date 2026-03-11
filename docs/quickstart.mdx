@@ -1,0 +1,90 @@
+---
+title: "Quickstart"
+description: "Get Stocks Signalist running locally in under 5 minutes."
+---
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- **Node.js** v18 or later
+- **npm** or **pnpm**
+- **MongoDB Atlas** account (or a local MongoDB instance)
+- **API Keys:**
+  - [Finnhub API Key](https://finnhub.io/) (free tier available)
+  - [Google Gemini API Key](https://ai.google.dev/) (optional, for AI features)
+  - Gmail account with an [app password](https://myaccount.google.com/apppasswords) for email
+
+## Installation
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/marc100s/stocks-signalist.git
+    cd stocks-signalist
+    ```
+  </Step>
+  <Step title="Install dependencies">
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Set up environment variables">
+    Copy the example file and fill in your credentials:
+    ```bash
+    cp .env.example .env
+    ```
+    See the [Environment Variables](/environment-variables) page for details on each variable.
+  </Step>
+  <Step title="Run the development server">
+    ```bash
+    npm run dev
+    ```
+    Navigate to [http://localhost:3000](http://localhost:3000) to see the app.
+  </Step>
+</Steps>
+
+## Available Scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run dev` | Start development server with Turbopack |
+| `npm run build` | Create production build |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run test:db` | Test database connection |
+| `npm run db:clear-users` | Clear all users (development only) |
+
+## Project Structure
+
+```
+stocks-signalist/
+├── app/                      # Next.js App Router
+│   ├── (auth)/              # Auth pages (sign-in, sign-up, reset-password)
+│   ├── (root)/              # Main app pages (dashboard, watchlist, settings)
+│   ├── api/                 # API routes
+│   └── globals.css          # Global styles
+├── components/              # React components
+│   ├── ui/                  # shadcn/ui components
+│   └── forms/               # Form components
+├── lib/                     # Utility functions
+│   ├── actions/             # Server actions
+│   ├── better-auth/         # Authentication config
+│   ├── inngest/             # Event workflows
+│   └── nodemailer/          # Email templates and functions
+├── database/                # Database models and connection
+├── middleware/              # Next.js middleware
+├── public/                  # Static assets
+└── scripts/                 # Utility scripts
+```
+
+## Next Steps
+
+<Columns cols={2}>
+  <Card title="Environment Variables" icon="key" href="/environment-variables">
+    Configure all required and optional variables.
+  </Card>
+  <Card title="Authentication" icon="lock" href="/authentication/overview">
+    Learn about the auth system and how to configure it.
+  </Card>
+</Columns>

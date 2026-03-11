@@ -1,0 +1,121 @@
+---
+title: "Email Verification"
+description: "How email verification works in Stocks Signalist, including the complete flow and common fixes."
+---
+
+## Verification Flow
+
+<Steps>
+  <Step title="User signs up">
+    A record is created in the `user` collection with `emailVerified: false`. Profile data is saved to the temporary `userprofile` collection.
+  </Step>
+  <Step title="Verification email sent">
+    Better Auth generates a token stored in the `verification` collection and sends an email with a verification link.
+  </Step>
+  <Step title="User clicks the link">
+    The link hits `GET /api/auth/verify-email?token=...&callbackURL=/`. Better Auth validates the token and sets `emailVerified: true`.
+  </Step>
+  <Step title="Welcome email triggered">
+    The `onEmailVerification` callback fires, sends an Inngest event to trigger the welcome email, and cleans up the temporary profile data.
+  </Step>
+  <Step title="User can sign in">
+    With `emailVerified: true`, the user can now authenticate normally.
+  </Step>
+</Steps>
+
+<Note>
+  In development (`NODE_ENV=development`), email verification is **disabled**. Users are auto signed-in after signup and verification URLs are logged to the console instead of emailed.
+</Note>
+
+## Configuration
+
+Email verification is configured in `lib/better-auth/auth.ts`:
+
+```typescript
+emailAndPassword: {
+  enabled: true,
+  requireEmailVerification: process.env.NODE_ENV === "production",
+  autoSignIn: process.env.NODE_ENV === "development",
+  sendVerificationEmail: async ({ user, url, token }) => {
+    if (process.env.NODE_ENV === "development") {
+      console.log("Verification URL:", url);
+    } else {
+      await sendVerificationEmail({ email: user.email, verificationUrl: url });
+    }
+  },
+},
+emailVerification: {
+  sendOnSignUp: process.env.NODE_ENV === "production",
+  autoSignInAfterVerification: true,
+  onEmailVerification: async (user) => {
+    // Triggers welcome email via Inngest
+  },
+}
+```
+
+## Important: GET Not POST
+
+The verification endpoint uses **GET** with query parameters, not POST with a JSON body.
+
+```typescript
+// Correct
+const verifyURL = new URL("/api/auth/verify-email", window.location.origin);
+verifyURL.searchParams.set("token", token);
+verifyURL.searchParams.set("callbackURL", callbackURL);
+
+const response = await fetch(verifyURL.toString(), {
+  method: "GET",
+  redirect: "manual",
+});
+
+// Better Auth redirects on success (307/302)
+if (response.status === 307 || response.status === 302 || response.ok) {
+  // Verification succeeded
+}
+```
+
+## Email Template
+
+The verification email uses a styled HTML template defined in `lib/nodemailer/templates.ts` with:
+
+- Gold/yellow CTA button matching the brand
+- 24-hour expiry notice
+- Mobile-responsive layout
+- Dark mode support
+
+All URLs in templates use the `{{baseUrl}}` placeholder, which is replaced at runtime with `NEXT_PUBLIC_BASE_URL`.
+
+## Database
+
+| Collection | Role |
+| --- | --- |
+| `user` | `emailVerified` field updated to `true` after verification |
+| `verification` | Stores ephemeral tokens — deleted after use |
+| `userprofile` | Temporary sign-up data — deleted after verification triggers welcome email |
+
+<Note>
+  It's **normal** for the `verification` collection to appear empty after a user verifies. Tokens are ephemeral and deleted once consumed.
+</Note>
+
+## Testing
+
+<Tabs>
+  <Tab title="Development">
+    1. Run `npm run dev` and sign up
+    2. Copy the verification URL from the terminal logs:
+    ```
+    📧 EMAIL VERIFICATION (Development Mode)
+    To: test@example.com
+    Verification URL: http://localhost:3000/verify-email?token=...&callbackURL=/
+    ```
+    3. Paste the URL in your browser
+    4. You should see "Email Verified!" and be redirected to sign-in
+  </Tab>
+  <Tab title="Production">
+    1. Sign up at your production URL
+    2. Check your inbox for the verification email
+    3. Verify the email contains a correct URL with `?token=` parameter
+    4. Click the button — should redirect to sign-in
+    5. Sign in with the verified account
+  </Tab>
+</Tabs>

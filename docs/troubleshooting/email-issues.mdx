@@ -1,0 +1,114 @@
+---
+title: "Email Issues"
+description: "Troubleshooting email delivery, broken links, and template problems."
+---
+
+## Email Links Point to Wrong Domain
+
+**Symptom:** Verification, password reset, or magic link emails contain `http://localhost:3000` or an old production URL.
+
+**Cause:** `BETTER_AUTH_URL` and/or `NEXT_PUBLIC_BASE_URL` are misconfigured.
+
+<Steps>
+  <Step title="Update BETTER_AUTH_URL">
+    In Vercel dashboard → **Settings** → **Environment Variables**:
+    ```bash
+    BETTER_AUTH_URL=https://stocks-signalist.vercel.app
+    ```
+    Apply to **Production**, **Preview**, and **Development**.
+  </Step>
+  <Step title="Update NEXT_PUBLIC_BASE_URL">
+    ```bash
+    NEXT_PUBLIC_BASE_URL=https://stocks-signalist.vercel.app
+    ```
+    This controls the `{{baseUrl}}` placeholder in all email templates.
+  </Step>
+  <Step title="Redeploy">
+    Go to Vercel **Deployments** → click **...** on the latest → **Redeploy**.
+  </Step>
+</Steps>
+
+<Warning>
+  All email templates use the `{{baseUrl}}` placeholder which is replaced at runtime. If `NEXT_PUBLIC_BASE_URL` is wrong, **all** emails (welcome, verification, password reset, magic link, news summary) will have broken links.
+</Warning>
+
+## Emails Not Being Received
+
+<AccordionGroup>
+  <Accordion title="Check Nodemailer credentials">
+    Verify in Vercel environment variables:
+    - `NODEMAILER_EMAIL` — your Gmail address
+    - `NODEMAILER_PASSWORD` — a Gmail **app password** (not your regular password)
+
+    To generate an app password:
+    1. Enable 2FA on your Gmail account
+    2. Go to [App Passwords](https://myaccount.google.com/apppasswords)
+    3. Generate a new password for "Mail"
+  </Accordion>
+  <Accordion title="Check spam folder">
+    Gmail SMTP emails may land in spam. Check the recipient's spam/junk folder.
+  </Accordion>
+  <Accordion title="Gmail SMTP limits">
+    Gmail allows ~500 emails/day. If you're hitting limits, consider switching to a dedicated service like SendGrid or AWS SES.
+  </Accordion>
+  <Accordion title="Check Vercel logs">
+    In Vercel dashboard → **Deployments** → click a deployment → **View Logs**. Look for:
+    ```
+    ✅ Verification email sent successfully to: user@example.com
+    ```
+    or error messages from Nodemailer.
+  </Accordion>
+</AccordionGroup>
+
+## Verification Link Doesn't Work
+
+**Symptom:** User clicks the verification link but still sees "Email not verified."
+
+**Common causes:**
+
+1. **Wrong HTTP method** — The verification page must use `GET /api/auth/verify-email?token=...`, not `POST`. See [Email Verification](/authentication/email-verification#important-get-not-post).
+
+2. **Token expired** — Verification tokens expire after 24 hours. The user needs to request a new one.
+
+3. **Token already used** — Each token is one-time use. Clicking the link twice won't work.
+
+4. **Wrong domain in URL** — If `BETTER_AUTH_URL` is incorrect, the verification endpoint won't match. Check Vercel logs for the generated URL.
+
+**Debug steps:**
+1. Visit the debug endpoint: `https://your-domain.vercel.app/api/debug-env` — should show correct `betterAuthUrl`
+2. Check the `user` collection in MongoDB:
+   ```javascript
+   db.user.findOne({ email: "user@example.com" })
+   // emailVerified should be true after successful verification
+   ```
+
+## Email Button Appears Black Instead of Yellow
+
+**Cause:** Some email clients strip CSS gradients.
+
+**Fix:** The templates in `lib/nodemailer/templates.ts` use inline `!important` styles with a solid fallback:
+
+```html
+<a href="{{verificationUrl}}"
+   style="background: #FDD458 !important;
+          background: linear-gradient(135deg, #FDD458 0%, #E8BA40 100%) !important;
+          color: #000000 !important;">
+  <span style="color: #000000 !important; font-weight: 600;">
+    Verify Email Address
+  </span>
+</a>
+```
+
+If the issue persists, test with different email clients (Gmail, Outlook, Apple Mail).
+
+## Welcome Email Sent Before Verification
+
+**Symptom:** Users receive the welcome email immediately after sign-up, before verifying.
+
+**Fix:** The welcome email should only be triggered by the `onEmailVerification` callback. Ensure:
+
+1. `signUpWithEmail` saves profile data to `userprofile` collection **without** triggering Inngest
+2. `onEmailVerification` callback in `auth.ts` fetches the profile and **then** sends the Inngest `app/user.created` event
+3. The temporary profile is cleaned up after the welcome email is triggered
+
+See [Email Verification](/authentication/email-verification) for the correct flow.

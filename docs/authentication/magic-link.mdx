@@ -1,0 +1,120 @@
+---
+title: "Magic Link"
+description: "Passwordless authentication with one-click sign-in via email."
+---
+
+## Overview
+
+Magic Link provides a passwordless sign-in experience. Users enter their email, receive a link, and click it to authenticate — no password needed.
+
+### Benefits
+
+- **No password required** — one-click authentication
+- **Auto sign-up** — new users are created automatically
+- **Secure** — links expire in 5 minutes and are one-time use
+- **Uses existing infrastructure** — same Nodemailer + Gmail SMTP setup
+
+## How It Works
+
+<Steps>
+  <Step title="User enters email">
+    On the sign-in page, the user provides their email address.
+  </Step>
+  <Step title="Server generates a magic link">
+    Better Auth creates a secure token (32 characters), stores it in the `verification` collection, and triggers the email callback.
+  </Step>
+  <Step title="Email is sent">
+    In production, a styled email with the magic link is sent. In development, the link is logged to the console.
+  </Step>
+  <Step title="User clicks the link">
+    The link hits `/api/auth/magic-link/verify?token=...`, Better Auth validates the token, creates a session, and redirects to the dashboard.
+  </Step>
+</Steps>
+
+## Server Configuration
+
+The magic link plugin is configured in `lib/better-auth/auth.ts`:
+
+```typescript
+import { magicLink } from "better-auth/plugins";
+import { sendMagicLinkEmail } from "@/lib/nodemailer";
+
+magicLink({
+  expiresIn: 60 * 5, // 5 minutes
+  disableSignUp: false,
+  async sendMagicLink({ email, url, token }, request) {
+    if (process.env.NODE_ENV !== "development") {
+      await sendMagicLinkEmail({ email, magicLinkUrl: url });
+    }
+  },
+})
+```
+
+## Client Usage
+
+```typescript
+import { authClient } from "@/lib/auth-client";
+
+await authClient.signIn.magicLink({
+  email: "user@example.com",
+  callbackURL: "/dashboard",
+  newUserCallbackURL: "/welcome",    // optional
+  errorCallbackURL: "/error",        // optional
+});
+```
+
+## Testing
+
+<Tabs>
+  <Tab title="Development">
+    1. Run `npm run dev`
+    2. Go to the sign-in page and enter an email
+    3. Check the terminal for the magic link URL:
+    ```
+    🔐 MAGIC LINK (Development Mode)
+    To: test@example.com
+    Magic Link URL: http://localhost:3000/api/auth/magic-link/verify?token=abc123...
+    ```
+    4. Copy the URL and paste it in your browser
+  </Tab>
+  <Tab title="Production">
+    1. Deploy to Vercel (auto-deploys on push to `main`)
+    2. Enter your email on the sign-in page
+    3. Check your inbox for the magic link email
+    4. Click the link — you should be redirected to the dashboard
+  </Tab>
+</Tabs>
+
+## Customization
+
+<AccordionGroup>
+  <Accordion title="Change expiry time">
+    ```typescript
+    magicLink({
+      expiresIn: 60 * 10, // 10 minutes instead of 5
+    })
+    ```
+  </Accordion>
+  <Accordion title="Disable auto sign-up">
+    ```typescript
+    magicLink({
+      disableSignUp: true, // only existing users can sign in
+    })
+    ```
+  </Accordion>
+  <Accordion title="Store tokens as hashed">
+    ```typescript
+    magicLink({
+      storeToken: "hashed", // extra security
+    })
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Security
+
+- **5-minute expiry** — links become invalid quickly
+- **One-time use** — each link can only be used once
+- **Cryptographic tokens** — 32-character secure random strings
+- **HTTPS only** in production
+- **Auto-verified** — users are marked as `emailVerified: true`

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Stocks Signalist",
+  "colors": {
+    "primary": "#FDD458",
+    "light": "#FDE68A",
+    "dark": "#E8BA40"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "quickstart",
+              "environment-variables"
+            ]
+          },
+          {
+            "group": "Authentication",
+            "pages": [
+              "authentication/overview",
+              "authentication/magic-link",
+              "authentication/email-verification"
+            ]
+          },
+          {
+            "group": "Deployment",
+            "pages": [
+              "deployment"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Troubleshooting",
+        "groups": [
+          {
+            "group": "Common Issues",
+            "pages": [
+              "troubleshooting/common-issues",
+              "troubleshooting/email-issues"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/marc100s/stocks-signalist",
+          "icon": "github"
+        }
+      ]
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:privacyellipsis@ellipsis-email.awsapps.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "App",
+      "href": "https://stocks-signalist.vercel.app"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/EllipsisTechno1",
+      "github": "https://github.com/marc100s"
+    }
+  }
+}

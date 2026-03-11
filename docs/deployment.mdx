@@ -1,0 +1,91 @@
+---
+title: "Deployment"
+description: "Deploy Stocks Signalist to Vercel with production-ready configuration."
+---
+
+## Deploy to Vercel
+
+<Steps>
+  <Step title="Push code to GitHub">
+    Ensure your latest changes are committed and pushed to the `main` branch.
+  </Step>
+  <Step title="Import in Vercel">
+    Go to [vercel.com](https://vercel.com/), click **Import Project**, and select your repository.
+  </Step>
+  <Step title="Configure environment variables">
+    In Vercel dashboard → **Settings** → **Environment Variables**, add:
+
+    ```bash
+    NODE_ENV=production
+    BETTER_AUTH_URL=https://stocks-signalist.vercel.app
+    NEXT_PUBLIC_BASE_URL=https://stocks-signalist.vercel.app
+    MONGODB_URI=your_mongodb_connection_string
+    BETTER_AUTH_SECRET=your_secret
+    NODEMAILER_EMAIL=your_email@gmail.com
+    NODEMAILER_PASSWORD=your_app_password
+    NEXT_PUBLIC_FINNHUB_API_KEY=your_api_key
+    ```
+
+    <Warning>
+      Do **not** override `NODE_ENV` — Vercel sets it to `production` automatically.
+    </Warning>
+  </Step>
+  <Step title="Deploy">
+    Vercel auto-deploys on every push to `main`. Check build logs for errors.
+  </Step>
+</Steps>
+
+## Production Checklist
+
+### Critical Variables
+
+- **`BETTER_AUTH_URL`** — Must match your actual production domain. Wrong values cause broken email verification and password reset links.
+- **`MONGODB_URI`** — Must include `/SignalisticsDB?` in the connection string. See [Environment Variables](/environment-variables#mongodb-uri).
+- **`BETTER_AUTH_SECRET`** — Use a strong, unique secret different from development.
+
+### Email Configuration
+
+- `NODEMAILER_EMAIL` — Gmail account for sending emails
+- `NODEMAILER_PASSWORD` — Gmail **app password** (not your regular password)
+- Test email delivery after deploying
+
+### Post-Deploy Verification
+
+<Tabs>
+  <Tab title="Auth Flow">
+    1. Sign up with a new account
+    2. Verify the email is received with correct production URLs
+    3. Click the verification link
+    4. Sign in with the verified account
+    5. Test password reset flow
+  </Tab>
+  <Tab title="Database">
+    Verify the correct database is being used:
+    ```bash
+    npx tsx scripts/list-collections.ts
+    ```
+    Expected collections: `user`, `account`, `session`, `verification`, `watchlists`
+
+    <Note>
+      Better Auth uses **singular** collection names: `user`, `account`, `session`, `verification` (not plural).
+    </Note>
+  </Tab>
+</Tabs>
+
+## Monitoring
+
+After deployment, keep an eye on:
+
+- Email delivery success rate
+- Authentication errors in Vercel logs
+- Database connection stability
+- API rate limits (Finnhub, Gemini)
+
+## Rollback Plan
+
+If issues occur after deployment:
+
+1. Keep previous environment variable values documented
+2. Have a database backup ready
+3. Revert `BETTER_AUTH_URL` if email links break
+4. Use Vercel's instant rollback to a previous deployment

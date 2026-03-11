@@ -13,8 +13,10 @@ import {
 import UserProfile from "@/database/models/userProfile.model";
 import { inngest } from "@/lib/inngest/client";
 
-let authInstance: ReturnType<typeof betterAuth> | null = null;
-let initPromise: Promise<ReturnType<typeof betterAuth>> | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let authInstance: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let initPromise: Promise<any> | null = null;
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -65,7 +67,7 @@ export const getAuth = async () => {
       emailVerification: {
         sendOnSignUp: !isDevelopment,
         autoSignInAfterVerification: true,
-        onEmailVerification: async (user) => {
+        onEmailVerification: async (user: { email: string; name: string }) => {
           // Callback after successful email verification
           console.log("✅ Email verified successfully for:", user.email);
 

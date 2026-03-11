@@ -73,7 +73,7 @@
    - Find `MONGODB_URI`
    - Click **Edit**
    - Ensure it has: `/SignalisticsDB?` in the URL
-   - Should be: `mongodb+srv://mce100s:***@cluster0.u5qoqnj.mongodb.net/SignalisticsDB?retryWrites=true&w=majority&appName=Cluster0`
+   - Should be: `mongodb+srv://<username>:<password>@cluster0.u5qoqnj.mongodb.net/SignalisticsDB?retryWrites=true&w=majority&appName=Cluster0`
    - Apply to: **Production**, **Preview**, **Development**
    - Click **Save**
 
@@ -96,7 +96,7 @@ Since existing users were created without proper verification:
 
 ```bash
 # Run locally to clean up SignalisticsDB
-MONGODB_URI="mongodb+srv://mce100s:***@cluster0.u5qoqnj.mongodb.net/SignalisticsDB?retryWrites=true&w=majority&appName=Cluster0" npx tsx scripts/clear-users.ts
+MONGODB_URI="mongodb+srv://<username>:<password>@cluster0.u5qoqnj.mongodb.net/SignalisticsDB?retryWrites=true&w=majority&appName=Cluster0" npx tsx scripts/clear-users.ts
 ```
 
 This will delete:

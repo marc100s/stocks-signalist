@@ -87,7 +87,7 @@ export default function WatchlistTable({
                 <div>
                   <div className="font-medium text-white">{stock.company}</div>
                   <div className="text-sm text-gray-400">
-                    Added {new Date(stock.addedAt).toLocaleDateString()}
+                    Added {new Date(stock.addedAt).toLocaleDateString("en-US")}
                   </div>
                 </div>
               </TableCell>

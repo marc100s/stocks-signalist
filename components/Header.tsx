@@ -16,7 +16,9 @@ const Header = async ({ user }: { user: User }) => {
             alt="Signalist logo"
             width={140}
             height={32}
-            className="h-8 w-auto cursor-pointer"
+            className="cursor-pointer"
+            style={{ width: "auto", height: "32px" }}
+            priority
           />
         </Link>
         <nav className="hidden sm:block">

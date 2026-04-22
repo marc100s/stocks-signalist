@@ -19,7 +19,8 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
             alt="Signalist logo"
             width={140}
             height={32}
-            className="h-8 w-auto"
+            style={{ width: "auto", height: "32px" }}
+            priority
           />
         </Link>
 
@@ -59,6 +60,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
             width={1440}
             height={1150}
             className="auth-dashboard-preview absolute top-0"
+            priority
           />
         </div>
       </section>

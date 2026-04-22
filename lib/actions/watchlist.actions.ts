@@ -63,54 +63,51 @@ export async function getWatchlistWithQuotes(
 
     if (items.length === 0) return [];
 
-    // Fetch real-time data for each stock with some rate limiting
-    const stocksWithData = await Promise.allSettled(
-      items.map(async (item, index) => {
-        try {
-          // Add small delay to avoid rate limiting (50ms per stock)
-          if (index > 0) {
-            await new Promise((resolve) => setTimeout(resolve, 50 * index));
-          }
+    // Fetch real-time data for each stock SEQUENTIALLY.
+    // Finnhub's free tier rate limits aggressive concurrency. If we fire
+    // 3 * N parallel requests on a cold cache (e.g. the very first render
+    // after login), several of them get 429'd and the wrapper actions
+    // silently return zeros, which is why the watchlist initially shows
+    // blank prices. Processing one symbol at a time (3 parallel calls for
+    // that symbol) keeps us safely under the per-second limit and lets
+    // Next.js cache each successful response for subsequent renders.
+    const stocksWithData: WatchlistStockData[] = [];
 
-          const [quote, profile, financials] = await Promise.all([
-            getStockQuote(item.symbol),
-            getCompanyProfile(item.symbol),
-            getBasicFinancials(item.symbol),
-          ]);
+    for (const item of items) {
+      try {
+        const [quote, profile, financials] = await Promise.all([
+          getStockQuote(item.symbol),
+          getCompanyProfile(item.symbol),
+          getBasicFinancials(item.symbol),
+        ]);
 
-          return {
-            symbol: item.symbol,
-            company: profile.name || item.company,
-            addedAt: item.addedAt,
-            price: quote.price,
-            change: quote.change,
-            changePercent: quote.changePercent,
-            marketCap: profile.marketCap,
-            peRatio: financials.peRatio,
-          };
-        } catch (error) {
-          console.error(`Error fetching data for ${item.symbol}:`, error);
-          // Return basic data if API call fails
-          return {
-            symbol: item.symbol,
-            company: item.company,
-            addedAt: item.addedAt,
-            price: 0,
-            change: 0,
-            changePercent: 0,
-            marketCap: 0,
-            peRatio: null,
-          };
-        }
-      })
-    );
+        stocksWithData.push({
+          symbol: item.symbol,
+          company: profile.name || item.company,
+          addedAt: item.addedAt,
+          price: quote.price,
+          change: quote.change,
+          changePercent: quote.changePercent,
+          marketCap: profile.marketCap,
+          peRatio: financials.peRatio,
+        });
+      } catch (error) {
+        console.error(`Error fetching data for ${item.symbol}:`, error);
+        // Return basic data if API call fails
+        stocksWithData.push({
+          symbol: item.symbol,
+          company: item.company,
+          addedAt: item.addedAt,
+          price: 0,
+          change: 0,
+          changePercent: 0,
+          marketCap: 0,
+          peRatio: null,
+        });
+      }
+    }
 
-    // Filter successful results and extract values
-    return stocksWithData
-      .filter((result) => result.status === "fulfilled")
-      .map(
-        (result) => (result as PromiseFulfilledResult<WatchlistStockData>).value
-      );
+    return stocksWithData;
   } catch (err) {
     console.error("getWatchlistWithQuotes error:", err);
     return [];

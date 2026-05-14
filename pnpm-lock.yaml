@@ -4,6 +4,18 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@opentelemetry/auto-instrumentations-node': 0.76.0
+  '@opentelemetry/exporter-prometheus': 0.218.0
+  '@opentelemetry/otlp-transformer': 0.218.0
+  '@opentelemetry/sdk-node': 0.218.0
+  '@hono/node-server': '>=1.19.13'
+  effect: '>=3.20.0'
+  hono: '>=4.12.14'
+  lodash: '>=4.18.0'
+  postcss: ^8.5.14
+  protobufjs: ^8.0.7
+
 importers:
 
   .:

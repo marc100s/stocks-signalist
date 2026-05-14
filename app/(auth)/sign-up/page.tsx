@@ -3,6 +3,7 @@
 // biome-ignore assist/source/organizeImports: <Example of suppression: // biome-ignore lint: false positive>
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -20,6 +21,7 @@ import { toast } from "sonner"; // ✅ add this (or your toast lib)
 import { signUpSchema, type SignUpFormData } from "@/lib/schemas";
 
 const SignUp = () => {
+  const router = useRouter();
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -52,7 +54,7 @@ const SignUp = () => {
           toast.success("Account created successfully!", {
             description: "You can now access your dashboard.",
           });
-          window.location.href = "/";
+          router.push("/");
         } else {
           // In production, show email verification message
           setShowVerificationMessage(true);

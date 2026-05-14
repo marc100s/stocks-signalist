@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,13 +15,10 @@ const ResetPasswordConfirmPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const [tokenError, setTokenError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!token) {
-      setTokenError("Invalid or missing reset token.");
-    }
-  }, [token]);
+  const tokenError = useMemo(
+    () => (!token ? "Invalid or missing reset token." : null),
+    [token]
+  );
 
   const {
     register,
